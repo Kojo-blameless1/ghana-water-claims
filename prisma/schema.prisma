@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model TravelVoucher {
+  id                  Int      @id @default(autoincrement())
+  employee            String
+  post                String
+  district            String
+  activity            String?
+  purpose             String
+  allowanceMonth      String
+  hotelNights         Int?
+  hotelPerNight       Float?
+  hotelActual         Float?
+  byAir               Float?
+  byRail              Float?
+  privateVehicleMiles Int?
+  privateVehicleRate  Float?
+  tolls               Float?
+  miscellaneous       Float?
+  totalAmount         Float
+  accountCode         String?
+  date                String?
+  claimant            String?
+  ddo                 String?
+  districtHead        String?
+  sectionalHead       String?
+  regionalChief       String?
+  witness             String?
+  approvedDate        String?
+  receivedDate        String?
+  receivedSum         String?
+  receiverSignature   String?
+  createdAt           DateTime @default(now())
+}

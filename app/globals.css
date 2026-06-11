@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #print-area, #print-area * {
+    visibility: visible;
+  }
+  #print-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 0.5in;
+  }
+  .no-print {
+    display: none;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Make all input boxes clearly visible */
+input, textarea {
+  border: 1px solid black !important;
+  background-color: white !important;
+  padding: 4px 6px !important;
+  font-size: 14px !important;
+  border-radius: 0 !important;
+}
+
+/* Also apply to print */
+@media print {
+  input, textarea {
+    border: 1px solid black !important;
+    background: white !important;
+  }
+}
+
+/* Force all text to be black and readable */
+body, label, span, div, h1, h2, h3, h4, p, input, textarea, button, th, td {
+  color: #000000 !important;
+  font-weight: normal;
+}
+
+/* Make sure input text is black and bold enough */
+input, textarea {
+  color: black !important;
+  font-weight: 500 !important;
+}
+
+/* Table headers (th) should be bold */
+th {
+  font-weight: 700 !important;
+}
