@@ -8,5 +8,9 @@ export default function PrintButton({ targetId }: { targetId: string }) {
     document.body.innerHTML = originalContent
     window.location.reload()
   }
-  return <button onClick={handlePrint} className="bg-blue-600 text-white px-4 py-2 rounded mt-4">Print Voucher</button>
+  return (
+    <button onClick={handlePrint} className="bg-blue-600 text-white px-6 py-2 rounded">
+      Print Voucher
+    </button>
+  )
 }
