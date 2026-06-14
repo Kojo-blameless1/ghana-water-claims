@@ -33,10 +33,12 @@ export default async function Home() {
             </div>
           </Link>
 
-          <div className="bg-white rounded-lg shadow-md p-6 border-l-8 border-gray-400 opacity-75">
-            <h2 className="text-xl font-bold mb-2">📊 Summary of Claims</h2>
-            <p className="text-gray-600">Monthly summary per district – coming soon.</p>
-          </div>
+          <Link href="/summary-claims/new" className="block">
+        <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition p-6 border-l-8 border-green-600">
+          <h2 className="text-xl font-bold mb-2">📊 Summary of Claims</h2>
+          <p className="text-gray-600">Enter monthly summary per district with staff details.</p>
+        </div>
+      </Link>
 
           <div className="bg-white rounded-lg shadow-md p-6 border-l-8 border-gray-400 opacity-75">
             <h2 className="text-xl font-bold mb-2">📅 Weekly Activity Log</h2>

@@ -29,3 +29,12 @@ model TravelVoucher {
   date                String?
   createdAt           DateTime @default(now())
 }
+
+model SummaryClaim {
+  id              Int      @id @default(autoincrement())
+  month           String
+  district        String
+  preparedBy      String?
+  staffEntries    String   // JSON stringified array
+  createdAt       DateTime @default(now())
+}
