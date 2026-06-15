@@ -31,3 +31,10 @@ CREATE TABLE "SummaryClaim" (
     "staffEntries" TEXT NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- CreateTable
+CREATE TABLE "Itinerary" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "entries" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

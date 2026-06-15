@@ -38,3 +38,9 @@ model SummaryClaim {
   staffEntries    String   // JSON stringified array
   createdAt       DateTime @default(now())
 }
+
+model Itinerary {
+  id          Int      @id @default(autoincrement())
+  entries     String   // JSON string of array
+  createdAt   DateTime @default(now())
+}
