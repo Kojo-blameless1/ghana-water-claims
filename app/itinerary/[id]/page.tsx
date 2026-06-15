@@ -48,9 +48,24 @@ export default function ViewItinerary() {
       });
   }, [id]);
 
-  if (loading) return <div style={{ padding: 40, textAlign: "center" }}>Loading itinerary…</div>;
-  if (error) return <div style={{ padding: 40, textAlign: "center", color: "red" }}>Error: {error}</div>;
-  if (!itinerary) return <div style={{ padding: 40, textAlign: "center" }}>Itinerary not found.</div>;
+  if (loading)
+    return (
+      <div style={{ padding: 40, textAlign: "center", fontFamily: "sans-serif", color: "#555" }}>
+        Loading itinerary…
+      </div>
+    );
+  if (error)
+    return (
+      <div style={{ padding: 40, textAlign: "center", fontFamily: "sans-serif", color: "red" }}>
+        Error: {error}
+      </div>
+    );
+  if (!itinerary)
+    return (
+      <div style={{ padding: 40, textAlign: "center", fontFamily: "sans-serif", color: "red" }}>
+        Itinerary not found.
+      </div>
+    );
 
   const originalEntries = itinerary.entries;
   const totalConveyance = originalEntries.reduce((sum, row) => sum + (row.conveyanceAmount || 0), 0);
@@ -112,7 +127,7 @@ export default function ViewItinerary() {
 
   return (
     <>
-      {/* Toolbar */}
+      {/* Toolbar (hidden when printing) */}
       <div
         id="itinerary-toolbar"
         style={{
@@ -127,10 +142,33 @@ export default function ViewItinerary() {
           GWL Itinerary #{itinerary.id}
         </span>
         <div style={{ display: "flex", gap: 8 }}>
-          <button onClick={() => window.history.back()} style={{ color: "#fff", border: "1px solid rgba(255,255,255,0.4)", background: "transparent", padding: "4px 12px", borderRadius: 4, cursor: "pointer", fontSize: 13 }}>
+          <button
+            onClick={() => window.history.back()}
+            style={{
+              color: "#fff",
+              border: "1px solid rgba(255,255,255,0.4)",
+              background: "transparent",
+              padding: "4px 12px",
+              borderRadius: 4,
+              cursor: "pointer",
+              fontSize: 13,
+            }}
+          >
             ← Back
           </button>
-          <button onClick={() => window.print()} style={{ background: "#fff", color: "#006837", fontWeight: 700, padding: "4px 16px", borderRadius: 4, cursor: "pointer", fontSize: 13, border: "none" }}>
+          <button
+            onClick={() => window.print()}
+            style={{
+              background: "#fff",
+              color: "#006837",
+              fontWeight: 700,
+              padding: "4px 16px",
+              borderRadius: 4,
+              cursor: "pointer",
+              fontSize: 13,
+              border: "none",
+            }}
+          >
             🖨 Print Itinerary
           </button>
         </div>
@@ -139,14 +177,37 @@ export default function ViewItinerary() {
       {/* Printable content */}
       <div id="gwl-print-itinerary" style={pageStyle}>
         {/* Header */}
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 12 }}>
-          <img src="/logo.png" alt="GWL Logo" style={{ width: 64, height: 64, objectFit: "contain" }} />
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "space-between",
+            marginBottom: 12,
+          }}
+        >
+          <img
+            src="/logo.png"
+            alt="GWL Logo"
+            style={{ width: 64, height: 64, objectFit: "contain" }}
+          />
           <div style={{ textAlign: "center", flex: 1 }}>
-            <div style={{ fontWeight: "bold", fontSize: 16, letterSpacing: 0.5 }}>GHANA WATER LIMITED</div>
+            <div
+              style={{ fontWeight: "bold", fontSize: 16, letterSpacing: 0.5 }}
+            >
+              GHANA WATER LIMITED
+            </div>
             <div style={{ fontSize: 13 }}>ASHANTI SOUTH REGION</div>
-            <div style={{ fontSize: 13, textDecoration: "underline", fontWeight: "bold" }}>ITINERARY</div>
+            <div
+              style={{
+                fontSize: 13,
+                textDecoration: "underline",
+                fontWeight: "bold",
+              }}
+            >
+              ITINERARY
+            </div>
           </div>
-          <div style={{ width: 64 }}></div>
+          <div style={{ width: 64 }}></div> {/* spacer for symmetry */}
         </div>
         <hr style={{ borderTop: "1.5px solid #000", margin: "6px 0 16px" }} />
 
@@ -176,27 +237,63 @@ export default function ViewItinerary() {
           <tbody>
             {paddedEntries.map((row, idx) => (
               <tr key={idx}>
-                <td style={td()}>{row.depPlace}</td>
-                <td style={td()}>{row.depDate}</td>
-                <td style={td()}>{row.depHour}</td>
-                <td style={td()}>{row.arrPlace}</td>
-                <td style={td()}>{row.arrDate}</td>
-                <td style={td()}>{row.arrHour}</td>
-                <td style={tdRight()}>{fmt(row.mileageStandard)}</td>
-                <td style={tdRight()}>{fmt(row.mileageSubstandard)}</td>
-                <td style={tdRight()}>{fmt(row.radius)}</td>
-                <td style={tdRight()}>{fmt(row.conveyanceAmount)}</td>
+                <td style={{ ...td(), minWidth: 80, minHeight: 24, verticalAlign: "middle", padding: "4px 6px" }}>
+                  {row.depPlace || "\u00A0"}
+                </td>
+                <td style={{ ...td(), minWidth: 80, minHeight: 24, verticalAlign: "middle", padding: "4px 6px" }}>
+                  {row.depDate || "\u00A0"}
+                </td>
+                <td style={{ ...td(), minWidth: 60, minHeight: 24, verticalAlign: "middle", padding: "4px 6px" }}>
+                  {row.depHour || "\u00A0"}
+                </td>
+                <td style={{ ...td(), minWidth: 80, minHeight: 24, verticalAlign: "middle", padding: "4px 6px" }}>
+                  {row.arrPlace || "\u00A0"}
+                </td>
+                <td style={{ ...td(), minWidth: 80, minHeight: 24, verticalAlign: "middle", padding: "4px 6px" }}>
+                  {row.arrDate || "\u00A0"}
+                </td>
+                <td style={{ ...td(), minWidth: 60, minHeight: 24, verticalAlign: "middle", padding: "4px 6px" }}>
+                  {row.arrHour || "\u00A0"}
+                </td>
+                <td style={{ ...tdRight(), minWidth: 70, minHeight: 24, verticalAlign: "middle", padding: "4px 6px" }}>
+                  {row.mileageStandard && row.mileageStandard !== 0 ? row.mileageStandard.toFixed(2) : "\u00A0"}
+                </td>
+                <td style={{ ...tdRight(), minWidth: 70, minHeight: 24, verticalAlign: "middle", padding: "4px 6px" }}>
+                  {row.mileageSubstandard && row.mileageSubstandard !== 0 ? row.mileageSubstandard.toFixed(2) : "\u00A0"}
+                </td>
+                <td style={{ ...tdRight(), minWidth: 60, minHeight: 24, verticalAlign: "middle", padding: "4px 6px" }}>
+                  {row.radius && row.radius !== 0 ? row.radius.toFixed(2) : "\u00A0"}
+                </td>
+                <td style={{ ...tdRight(), minWidth: 80, minHeight: 24, verticalAlign: "middle", padding: "4px 6px" }}>
+                  {row.conveyanceAmount && row.conveyanceAmount !== 0 ? row.conveyanceAmount.toFixed(2) : "\u00A0"}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
 
         {/* Total */}
-        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 12, fontSize: 10, fontWeight: "bold" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginTop: 12,
+            fontSize: 10,
+            fontWeight: "bold",
+          }}
+        >
           Total Mileage (GH¢): {totalConveyance.toFixed(2)}
         </div>
 
-        <div style={{ textAlign: "center", marginTop: 28, fontSize: 9, fontFamily: "monospace" }}>
+        {/* Footer */}
+        <div
+          style={{
+            textAlign: "center",
+            marginTop: 28,
+            fontSize: 9,
+            fontFamily: "monospace",
+          }}
+        >
           G.W.L. ACCTS. FORMS – ITINERARY
         </div>
       </div>
