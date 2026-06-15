@@ -189,7 +189,7 @@ export default function ViewTravelVoucher() {
       <div
         id="gwl-toolbar"
         style={{
-          background: "#006837",
+          background: "#3937b5",
           padding: "10px 24px",
           display: "flex",
           justifyContent: "space-between",
@@ -218,7 +218,7 @@ export default function ViewTravelVoucher() {
             onClick={() => window.print()}
             style={{
               background: "#fff",
-              color: "#006837",
+              color: "#0e740b",
               fontWeight: 700,
               padding: "4px 16px",
               borderRadius: 4,
