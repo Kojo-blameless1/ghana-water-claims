@@ -38,23 +38,20 @@ export default function ViewSummaryClaim() {
   useEffect(() => {
     fetch(`/api/summary-claim/${id}`)
       .then((r) => r.json())
-      .then((d) => {
-        setClaim(d);
-        setLoading(false);
-      })
+      .then((d) => { setClaim(d); setLoading(false); })
       .catch(() => setLoading(false));
   }, [id]);
 
   if (loading)
     return (
-      <div style={{ padding: 32, textAlign: "center", color: "#555" }}>
-        Loading summary…
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f0f4ff", fontFamily: "'Inter','Segoe UI',sans-serif" }}>
+        <div style={{ color: "#0052cc", fontSize: 14, fontWeight: 600 }}>Loading summary…</div>
       </div>
     );
   if (!claim)
     return (
-      <div style={{ padding: 32, textAlign: "center", color: "red" }}>
-        Summary not found.
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f0f4ff", fontFamily: "'Inter','Segoe UI',sans-serif" }}>
+        <div style={{ color: "#dc2626", fontSize: 14 }}>Summary not found.</div>
       </div>
     );
 
@@ -64,18 +61,6 @@ export default function ViewSummaryClaim() {
     ...Array(Math.max(0, MIN_ROWS - entries.length)).fill(null),
   ];
 
-  // ── Shared styles ──────────────────────────────────────────────────
-  const page: React.CSSProperties = {
-    maxWidth: 1050,
-    margin: "24px auto 48px",
-    padding: "32px 40px",
-    background: "#fff",
-    border: "1px solid #ccc",
-    fontFamily: "'Times New Roman', Times, serif",
-    fontSize: 9,
-    color: "#000",
-    boxShadow: "0 2px 12px rgba(0,0,0,0.10)",
-  };
   const th = (extra: React.CSSProperties = {}): React.CSSProperties => ({
     border: "1px solid #000",
     padding: "3px 4px",
@@ -100,27 +85,29 @@ export default function ViewSummaryClaim() {
       <div
         id="gwl-toolbar"
         style={{
-          background: "#006837",
-          padding: "10px 24px",
+          background: "#0052cc",
+          padding: "0 24px",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          height: 60,
+          boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
         }}
       >
-        <span style={{ color: "#fff", fontWeight: 600, fontSize: 14 }}>
-          Summary of Claims #{claim.id} — {claim.district} — {claim.month}
-        </span>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <img src="/logo.png" alt="GWL" style={{ height: 34, width: 34, objectFit: "contain", borderRadius: 4 }} />
+          <div style={{ width: 1, height: 28, background: "rgba(255,255,255,0.25)" }} />
+          <span style={{ color: "#fff", fontWeight: 600, fontSize: 14 }}>
+            Summary of Claims #{claim.id} — {claim.district} — {claim.month}
+          </span>
+        </div>
         <div style={{ display: "flex", gap: 8 }}>
           <button
             onClick={() => window.history.back()}
             style={{
-              color: "#fff",
-              border: "1px solid rgba(255,255,255,0.4)",
-              background: "transparent",
-              padding: "4px 12px",
-              borderRadius: 4,
-              cursor: "pointer",
-              fontSize: 13,
+              color: "#fff", border: "1px solid rgba(255,255,255,0.4)",
+              background: "transparent", padding: "6px 14px",
+              borderRadius: 6, cursor: "pointer", fontSize: 13, fontWeight: 500,
             }}
           >
             ← Back
@@ -128,14 +115,9 @@ export default function ViewSummaryClaim() {
           <button
             onClick={() => window.print()}
             style={{
-              background: "#fff",
-              color: "#006837",
-              fontWeight: 700,
-              padding: "4px 16px",
-              borderRadius: 4,
-              cursor: "pointer",
-              fontSize: 13,
-              border: "none",
+              background: "#fff", color: "#0052cc", fontWeight: 700,
+              padding: "6px 18px", borderRadius: 6, cursor: "pointer",
+              fontSize: 13, border: "none",
             }}
           >
             🖨 Print Summary
@@ -144,84 +126,66 @@ export default function ViewSummaryClaim() {
       </div>
 
       {/* ── Printable document ── */}
-      <div id="gwl-print-page" style={page}>
-        {/* Title */}
-        <div style={{ textAlign: "center", marginBottom: 10 }}>
-          <div style={{ fontWeight: "bold", fontSize: 13, letterSpacing: 0.4 }}>
-            GWL – ASHANTI SOUTH
+      <div id="gwl-print-page" style={{
+        maxWidth: 1050,
+        margin: "24px auto 48px",
+        padding: "32px 40px",
+        background: "#fff",
+        border: "1px solid #ccc",
+        fontFamily: "'Times New Roman', Times, serif",
+        fontSize: 9,
+        color: "#000",
+        boxShadow: "0 2px 12px rgba(0,0,0,0.10)",
+      }}>
+
+        {/* ── Document header with logo ── */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+          <img src="/logo.png" alt="GWL Logo" style={{ width: 56, height: 56, objectFit: "contain" }} />
+          <div style={{ textAlign: "center", flex: 1 }}>
+            <div style={{ fontWeight: "bold", fontSize: 14, letterSpacing: 0.5 }}>
+              GHANA WATER LIMITED
+            </div>
+            <div style={{ fontSize: 11 }}>ASHANTI SOUTH REGION</div>
+            <div style={{ fontWeight: "bold", fontSize: 12, textDecoration: "underline", marginTop: 2 }}>
+              SUMMARY OF CLAIMS
+            </div>
           </div>
-          <div style={{ fontWeight: "bold", fontSize: 11 }}>
-            SUMMARY OF CLAIMS
+          <div style={{ fontSize: 9, textAlign: "right", lineHeight: 1.9 }}>
+            <div>Original</div>
+            <div>Duplicate</div>
           </div>
         </div>
 
+        <hr style={{ borderTop: "1.5px solid #000", margin: "8px 0 10px" }} />
+
         {/* District / Month */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            marginBottom: 10,
-            fontSize: 9.5,
-          }}
-        >
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10, fontSize: 9.5 }}>
           <div>
             <strong>DISTRICT:</strong>{" "}
-            <span
-              style={{
-                borderBottom: "1px solid #000",
-                minWidth: 180,
-                display: "inline-block",
-                paddingLeft: 4,
-              }}
-            >
+            <span style={{ borderBottom: "1px solid #000", minWidth: 180, display: "inline-block", paddingLeft: 4 }}>
               {claim.district}
             </span>
           </div>
           <div>
             <strong>MONTH:</strong>{" "}
-            <span
-              style={{
-                borderBottom: "1px solid #000",
-                minWidth: 130,
-                display: "inline-block",
-                paddingLeft: 4,
-              }}
-            >
+            <span style={{ borderBottom: "1px solid #000", minWidth: 130, display: "inline-block", paddingLeft: 4 }}>
               {claim.month}
             </span>
           </div>
         </div>
 
         {/* Main table */}
-        <table
-          style={{ width: "100%", borderCollapse: "collapse", fontSize: 8 }}
-        >
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 8 }}>
           <thead>
             <tr>
-              <th rowSpan={2} style={th({ width: "5%" })}>
-                STAFF NO.
-              </th>
-              <th rowSpan={2} style={th({ width: "13%" })}>
-                NAME OF STAFF
-              </th>
-              <th colSpan={2} style={th()}>
-                T &amp; T
-              </th>
-              <th colSpan={2} style={th()}>
-                NIGHT ALLOWANCE
-              </th>
-              <th colSpan={2} style={th()}>
-                DAY TRIP ALLOWANCE
-              </th>
-              <th colSpan={2} style={th()}>
-                RISK ALLOWANCE
-              </th>
-              <th colSpan={3} style={th()}>
-                OVERTIME HOURS
-              </th>
-              <th rowSpan={2} style={th({ width: "7%" })}>
-                OVERTIME APPROVED (GH¢)
-              </th>
+              <th rowSpan={2} style={th({ width: "5%" })}>STAFF NO.</th>
+              <th rowSpan={2} style={th({ width: "13%" })}>NAME OF STAFF</th>
+              <th colSpan={2} style={th()}>T &amp; T</th>
+              <th colSpan={2} style={th()}>NIGHT ALLOWANCE</th>
+              <th colSpan={2} style={th()}>DAY TRIP ALLOWANCE</th>
+              <th colSpan={2} style={th()}>RISK ALLOWANCE</th>
+              <th colSpan={3} style={th()}>OVERTIME HOURS</th>
+              <th rowSpan={2} style={th({ width: "7%" })}>OVERTIME APPROVED (GH¢)</th>
             </tr>
             <tr>
               {[
@@ -237,132 +201,56 @@ export default function ViewSummaryClaim() {
                 "CAT. C",
                 "OVERTIME HRS",
               ].map((label, i) => (
-                <th key={i} style={th({ fontSize: 7, background: "#f0f0f0" })}>
-                  {label}
-                </th>
+                <th key={i} style={th({ fontSize: 7, background: "#f0f0f0" })}>{label}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {rows.map((row, i) => (
               <tr key={i}>
-                <td style={td({ textAlign: "center" })}>
-                  {row?.staffNo || ""}
-                </td>
+                <td style={td({ textAlign: "center" })}>{row?.staffNo || ""}</td>
                 <td style={td()}>{row?.name || ""}</td>
-                <td style={td({ textAlign: "right", fontFamily: "monospace" })}>
-                  {row ? f(row.tntProposed) : ""}
-                </td>
-                <td style={td({ textAlign: "right", fontFamily: "monospace" })}>
-                  {row ? f(row.tntApproved) : ""}
-                </td>
-                <td style={td({ textAlign: "right", fontFamily: "monospace" })}>
-                  {row ? f(row.nightProposed) : ""}
-                </td>
-                <td style={td({ textAlign: "right", fontFamily: "monospace" })}>
-                  {row ? f(row.nightApproved) : ""}
-                </td>
-                <td style={td({ textAlign: "right", fontFamily: "monospace" })}>
-                  {row ? f(row.dayTripProposed) : ""}
-                </td>
-                <td style={td({ textAlign: "right", fontFamily: "monospace" })}>
-                  {row ? f(row.dayTripApproved) : ""}
-                </td>
-                <td style={td({ textAlign: "right", fontFamily: "monospace" })}>
-                  {row ? f(row.riskProposed) : ""}
-                </td>
-                <td style={td({ textAlign: "right", fontFamily: "monospace" })}>
-                  {row ? f(row.riskApproved) : ""}
-                </td>
-                <td style={td({ textAlign: "center" })}>
-                  {row ? row.overtimeCatA || "" : ""}
-                </td>
-                <td style={td({ textAlign: "center" })}>
-                  {row ? row.overtimeCatC || "" : ""}
-                </td>
-                <td style={td({ textAlign: "center" })}>
-                  {row ? row.overtimeHrs || "" : ""}
-                </td>
-                <td style={td({ textAlign: "right", fontFamily: "monospace" })}>
-                  {row ? f(row.overtimeApproved) : ""}
-                </td>
+                <td style={td({ textAlign: "right", fontFamily: "monospace" })}>{row ? f(row.tntProposed) : ""}</td>
+                <td style={td({ textAlign: "right", fontFamily: "monospace" })}>{row ? f(row.tntApproved) : ""}</td>
+                <td style={td({ textAlign: "right", fontFamily: "monospace" })}>{row ? f(row.nightProposed) : ""}</td>
+                <td style={td({ textAlign: "right", fontFamily: "monospace" })}>{row ? f(row.nightApproved) : ""}</td>
+                <td style={td({ textAlign: "right", fontFamily: "monospace" })}>{row ? f(row.dayTripProposed) : ""}</td>
+                <td style={td({ textAlign: "right", fontFamily: "monospace" })}>{row ? f(row.dayTripApproved) : ""}</td>
+                <td style={td({ textAlign: "right", fontFamily: "monospace" })}>{row ? f(row.riskProposed) : ""}</td>
+                <td style={td({ textAlign: "right", fontFamily: "monospace" })}>{row ? f(row.riskApproved) : ""}</td>
+                <td style={td({ textAlign: "center" })}>{row ? row.overtimeCatA || "" : ""}</td>
+                <td style={td({ textAlign: "center" })}>{row ? row.overtimeCatC || "" : ""}</td>
+                <td style={td({ textAlign: "center" })}>{row ? row.overtimeHrs || "" : ""}</td>
+                <td style={td({ textAlign: "right", fontFamily: "monospace" })}>{row ? f(row.overtimeApproved) : ""}</td>
               </tr>
             ))}
           </tbody>
         </table>
 
         {/* Approval signatures */}
-        <div
-          style={{
-            marginTop: 30,
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 32,
-            fontSize: 9,
-          }}
-        >
+        <div style={{ marginTop: 30, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32, fontSize: 9 }}>
           <div>
-            <div style={{ fontWeight: "bold", marginBottom: 28 }}>
-              RECOMMENDED FOR APPROVAL:
-            </div>
+            <div style={{ fontWeight: "bold", marginBottom: 28 }}>RECOMMENDED FOR APPROVAL:</div>
             <div style={{ marginBottom: 36 }}>
-              <div
-                style={{
-                  borderTop: "1px solid #000",
-                  paddingTop: 2,
-                  marginTop: 32,
-                  textAlign: "center",
-                  fontWeight: "bold",
-                  fontSize: 9,
-                }}
-              >
+              <div style={{ borderTop: "1px solid #000", paddingTop: 2, marginTop: 32, textAlign: "center", fontWeight: "bold", fontSize: 9 }}>
                 DDO / DCO
               </div>
             </div>
             <div>
-              <div
-                style={{
-                  borderTop: "1px solid #000",
-                  paddingTop: 2,
-                  marginTop: 32,
-                  textAlign: "center",
-                  fontWeight: "bold",
-                  fontSize: 9,
-                }}
-              >
+              <div style={{ borderTop: "1px solid #000", paddingTop: 2, marginTop: 32, textAlign: "center", fontWeight: "bold", fontSize: 9 }}>
                 DISTRICT/UNIT HEAD
               </div>
             </div>
           </div>
           <div>
-            <div style={{ fontWeight: "bold", marginBottom: 28 }}>
-              APPROVED BY:
-            </div>
+            <div style={{ fontWeight: "bold", marginBottom: 28 }}>APPROVED BY:</div>
             <div style={{ marginBottom: 36 }}>
-              <div
-                style={{
-                  borderTop: "1px solid #000",
-                  paddingTop: 2,
-                  marginTop: 32,
-                  textAlign: "center",
-                  fontWeight: "bold",
-                  fontSize: 9,
-                }}
-              >
+              <div style={{ borderTop: "1px solid #000", paddingTop: 2, marginTop: 32, textAlign: "center", fontWeight: "bold", fontSize: 9 }}>
                 SECTIONAL HEAD
               </div>
             </div>
             <div>
-              <div
-                style={{
-                  borderTop: "1px solid #000",
-                  paddingTop: 2,
-                  marginTop: 32,
-                  textAlign: "center",
-                  fontWeight: "bold",
-                  fontSize: 9,
-                }}
-              >
+              <div style={{ borderTop: "1px solid #000", paddingTop: 2, marginTop: 32, textAlign: "center", fontWeight: "bold", fontSize: 9 }}>
                 REGIONAL CHIEF MANAGER
               </div>
             </div>
@@ -370,24 +258,14 @@ export default function ViewSummaryClaim() {
         </div>
 
         {claim.preparedBy && (
-          <div
-            style={{
-              fontSize: 8,
-              marginTop: 16,
-              borderTop: "1px dotted #aaa",
-              paddingTop: 6,
-              color: "#555",
-            }}
-          >
+          <div style={{ fontSize: 8, marginTop: 16, borderTop: "1px dotted #aaa", paddingTop: 6, color: "#555" }}>
             Prepared by: {claim.preparedBy}
           </div>
         )}
       </div>
 
-      {/* ── Print CSS — the key trick: only #gwl-print-page is visible ── */}
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
+      {/* ── Print CSS ── */}
+      <style dangerouslySetInnerHTML={{ __html: `
         @media print {
           body * { visibility: hidden; }
           #gwl-print-page, #gwl-print-page * { visibility: visible; }
@@ -400,12 +278,10 @@ export default function ViewSummaryClaim() {
             padding: 10mm 14mm !important;
             border: none !important;
             box-shadow: none !important;
-          }5l6t
+          }
           #gwl-toolbar { display: none !important; }
         }
-      `,
-        }}
-      />
+      ` }} />
     </>
   );
 }
