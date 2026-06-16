@@ -131,7 +131,7 @@ export default function ViewItinerary() {
       <div
         id="itinerary-toolbar"
         style={{
-          background: "#006837",
+          background: "#5121d3",
           padding: "10px 24px",
           display: "flex",
           justifyContent: "space-between",
@@ -160,7 +160,7 @@ export default function ViewItinerary() {
             onClick={() => window.print()}
             style={{
               background: "#fff",
-              color: "#006837",
+              color: "#f3fbf7",
               fontWeight: 700,
               padding: "4px 16px",
               borderRadius: 4,

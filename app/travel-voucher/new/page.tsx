@@ -35,8 +35,7 @@ export default function NewTravelVoucher() {
 
   const n = (v: unknown) => (isNaN(Number(v)) ? 0 : Number(v));
   const hotelActual = n(watch("hotelNights")) * n(watch("hotelPerNight"));
-  const vehicleTotal =
-    n(watch("privateVehicleMiles")) * n(watch("privateVehicleRate"));
+  const vehicleTotal = n(watch("privateVehicleMiles")) * n(watch("privateVehicleRate"));
   const total =
     hotelActual +
     n(watch("byAir")) +
@@ -73,26 +72,47 @@ export default function NewTravelVoucher() {
     }
   };
 
+  /* ── Success screen ── */
   if (savedId) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="bg-white border border-gray-200 rounded-xl p-10 text-center shadow-sm max-w-sm w-full">
-          <div className="text-5xl mb-4">✅</div>
-          <h2 className="text-xl font-bold text-gray-800 mb-2">
+      <div style={{
+        minHeight: "100vh", display: "flex", alignItems: "center",
+        justifyContent: "center", background: "#f0f4ff",
+        fontFamily: "'Inter', 'Segoe UI', sans-serif",
+      }}>
+        <div style={{
+          background: "#fff", borderRadius: 16, padding: "48px 40px",
+          textAlign: "center", boxShadow: "0 4px 24px rgba(0,82,204,0.10)",
+          maxWidth: 380, width: "100%", border: "1px solid #dce7ff",
+        }}>
+          <div style={{
+            width: 64, height: 64, borderRadius: "50%", background: "#e8f0ff",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            margin: "0 auto 20px", fontSize: 28, color: "#0052cc",
+          }}>✓</div>
+          <h2 style={{ fontSize: 20, fontWeight: 700, color: "#0a2540", marginBottom: 8 }}>
             Voucher Saved
           </h2>
-          <p className="text-gray-500 text-sm mb-6">
+          <p style={{ color: "#64748b", fontSize: 14, marginBottom: 28 }}>
             The travel expense voucher has been recorded successfully.
           </p>
           <button
             onClick={() => router.push(`/travel-voucher/${savedId}`)}
-            className="w-full bg-[#006837] text-white py-2 rounded-lg font-semibold mb-3 hover:bg-[#004d28] transition"
+            style={{
+              width: "100%", background: "#0052cc", color: "#fff", border: "none",
+              borderRadius: 8, padding: "11px 0", fontWeight: 700, fontSize: 14,
+              cursor: "pointer", marginBottom: 10,
+            }}
           >
-            View & Print Voucher
+            View &amp; Print Voucher
           </button>
           <button
             onClick={() => setSavedId(null)}
-            className="w-full border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-50 transition"
+            style={{
+              width: "100%", background: "transparent", color: "#0052cc",
+              border: "1.5px solid #0052cc", borderRadius: 8, padding: "10px 0",
+              fontWeight: 600, fontSize: 14, cursor: "pointer",
+            }}
           >
             Enter Another Voucher
           </button>
@@ -101,253 +121,217 @@ export default function NewTravelVoucher() {
     );
   }
 
-  const inputCls =
-    "w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#006837] focus:border-transparent";
-  const labelCls =
-    "block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1";
+  /* ── Shared styles ── */
+  const inputStyle: React.CSSProperties = {
+    width: "100%", border: "1.5px solid #dce7ff", borderRadius: 6,
+    padding: "9px 11px", fontSize: 13, outline: "none",
+    background: "#fff", color: "#0a2540", boxSizing: "border-box",
+  };
+  const labelStyle: React.CSSProperties = {
+    display: "block", fontSize: 11, fontWeight: 600, color: "#475569",
+    marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.05em",
+  };
+  const sectionStyle: React.CSSProperties = {
+    background: "#fff", borderRadius: 12, padding: "24px 28px",
+    marginBottom: 20, border: "1px solid #dce7ff",
+    boxShadow: "0 1px 8px rgba(0,82,204,0.06)",
+  };
+  const sectionTitleStyle: React.CSSProperties = {
+    fontSize: 11, fontWeight: 700, color: "#0052cc",
+    textTransform: "uppercase", letterSpacing: "0.08em",
+    marginBottom: 16, paddingBottom: 10,
+    borderBottom: "2px solid #e8f0ff", margin: "0 0 16px 0",
+  };
+  const readonlyStyle: React.CSSProperties = {
+    border: "1.5px solid #dce7ff", borderRadius: 6, padding: "9px 11px",
+    fontSize: 13, background: "#f0f4ff", color: "#0a2540",
+    fontFamily: "monospace", fontWeight: 600,
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
-      <form onSubmit={handleSubmit(onSubmit)} className="max-w-3xl mx-auto">
-        {/* Page header */}
-        <div className="flex items-center gap-4 mb-8">
-          <img
-            src="/logo.png"
-            alt="GWL Logo"
-            className="h-12 w-12 object-contain"
-          />
-          <div>
-            <h1 className="text-lg font-bold text-[#006837] leading-tight">
-              Ghana Water Limited
-            </h1>
-            <p className="text-sm text-gray-500">
-              Ashanti South Region — Travel Expense Voucher
-            </p>
+    <div style={{ minHeight: "100vh", background: "#f0f4ff", fontFamily: "'Inter', 'Segoe UI', sans-serif" }}>
+
+      {/* ── Nav bar ── */}
+      <div style={{
+        background: "#0052cc", padding: "0 32px",
+        display: "flex", alignItems: "center", gap: 16,
+        height: 60, boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+      }}>
+        <img src="/logo.png" alt="GWL" style={{ height: 36, width: 36, objectFit: "contain", borderRadius: 4 }} />
+        <div style={{ width: 1, height: 28, background: "rgba(255,255,255,0.25)" }} />
+        <div>
+          <div style={{ color: "#fff", fontWeight: 700, fontSize: 14, lineHeight: 1.2 }}>
+            Ghana Water Limited
           </div>
+          <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11 }}>
+            Ashanti South Region
+          </div>
+        </div>
+        <div style={{
+          marginLeft: "auto", background: "rgba(255,255,255,0.15)", color: "#fff",
+          fontSize: 12, fontWeight: 600, padding: "4px 14px",
+          borderRadius: 20, border: "1px solid rgba(255,255,255,0.3)",
+        }}>
+          Travel Expense Voucher
+        </div>
+      </div>
+
+      {/* ── Page body ── */}
+      <form onSubmit={handleSubmit(onSubmit)} style={{ maxWidth: 780, margin: "0 auto", padding: "32px 24px 60px" }}>
+
+        {/* Page heading */}
+        <div style={{ marginBottom: 24 }}>
+          <h1 style={{ fontSize: 22, fontWeight: 800, color: "#0a2540", margin: 0 }}>
+            New Travel Expense Voucher
+          </h1>
+          <p style={{ color: "#64748b", fontSize: 13, marginTop: 4 }}>
+            Complete all sections below. Totals are calculated automatically.
+          </p>
         </div>
 
         {/* ── Section 1: Employee Details ── */}
-        <section className="bg-white border border-gray-200 rounded-xl p-6 mb-5 shadow-sm">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-[#006837] mb-4 pb-2 border-b border-gray-100">
-            Employee Details
-          </h2>
-          <div className="grid grid-cols-2 gap-4">
+        <div style={sectionStyle}>
+          <div style={sectionTitleStyle}>① Employee Details</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
             <div>
-              <label className={labelCls}>Employee Name</label>
-              <input
-                {...register("employee", { required: true })}
-                className={inputCls}
-                placeholder="Full name"
-              />
+              <label style={labelStyle}>Employee Name</label>
+              <input {...register("employee", { required: true })} style={inputStyle} placeholder="Full name" />
             </div>
             <div>
-              <label className={labelCls}>Post / Title</label>
-              <input
-                {...register("post")}
-                className={inputCls}
-                placeholder="e.g. Engineer"
-              />
+              <label style={labelStyle}>Post / Title</label>
+              <input {...register("post")} style={inputStyle} placeholder="e.g. Engineer" />
             </div>
             <div>
-              <label className={labelCls}>District</label>
-              <input
-                {...register("district")}
-                className={inputCls}
-                placeholder="e.g. Obuasi"
-              />
+              <label style={labelStyle}>District</label>
+              <input {...register("district")} style={inputStyle} placeholder="e.g. Obuasi" />
             </div>
             <div>
-              <label className={labelCls}>Activity</label>
-              <input
-                {...register("activity")}
-                className={inputCls}
-                placeholder="Activity description"
-              />
+              <label style={labelStyle}>Activity</label>
+              <input {...register("activity")} style={inputStyle} placeholder="Activity description" />
             </div>
-            <div className="col-span-2">
-              <label className={labelCls}>Purpose of Travel</label>
-              <input
-                {...register("purpose")}
-                className={inputCls}
-                placeholder="State the purpose clearly"
-              />
+            <div style={{ gridColumn: "1 / -1" }}>
+              <label style={labelStyle}>Purpose of Travel</label>
+              <input {...register("purpose")} style={inputStyle} placeholder="State the purpose clearly" />
             </div>
             <div>
-              <label className={labelCls}>Allowance for the Month</label>
-              <input
-                {...register("allowanceMonth")}
-                className={inputCls}
-                placeholder="e.g. June 2026"
-              />
+              <label style={labelStyle}>Allowance for the Month</label>
+              <input {...register("allowanceMonth")} style={inputStyle} placeholder="e.g. June 2026" />
             </div>
             <div>
-              <label className={labelCls}>Date</label>
-              <input
-                {...register("date")}
-                className={inputCls}
-                placeholder="dd/mm/yyyy"
-              />
+              <label style={labelStyle}>Date</label>
+              <input type="date" {...register("date")} style={inputStyle} />
             </div>
           </div>
-        </section>
+        </div>
 
         {/* ── Section 2: Lodging ── */}
-        <section className="bg-white border border-gray-200 rounded-xl p-6 mb-5 shadow-sm">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-[#006837] mb-4 pb-2 border-b border-gray-100">
-            Hotel / Guest House Lodging
-          </h2>
-          <div className="grid grid-cols-3 gap-4 items-end">
+        <div style={sectionStyle}>
+          <div style={sectionTitleStyle}>② Hotel / Guest House Lodging</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16, alignItems: "end" }}>
             <div>
-              <label className={labelCls}>Number of Nights</label>
-              <input
-                type="number"
-                min={0}
-                {...register("hotelNights")}
-                className={inputCls}
-                placeholder="0"
-              />
+              <label style={labelStyle}>Number of Nights</label>
+              <input type="number" min={0} {...register("hotelNights")} style={inputStyle} placeholder="0" />
             </div>
             <div>
-              <label className={labelCls}>Rate per Night (GH¢)</label>
-              <input
-                type="number"
-                step="0.01"
-                min={0}
-                {...register("hotelPerNight")}
-                className={inputCls}
-                placeholder="0.00"
-              />
+              <label style={labelStyle}>Rate per Night (GH¢)</label>
+              <input type="number" step="0.01" min={0} {...register("hotelPerNight")} style={inputStyle} placeholder="0.00" />
             </div>
             <div>
-              <label className={labelCls}>Lodging Actual (auto)</label>
-              <div className="border border-gray-200 bg-gray-50 rounded px-2 py-1.5 text-sm font-mono text-gray-700">
-                GH¢ {hotelActual.toFixed(2)}
-              </div>
+              <label style={labelStyle}>Lodging Actual (auto)</label>
+              <div style={readonlyStyle}>GH¢ {hotelActual.toFixed(2)}</div>
             </div>
           </div>
-        </section>
+        </div>
 
         {/* ── Section 3: Direct Travel Costs ── */}
-        <section className="bg-white border border-gray-200 rounded-xl p-6 mb-5 shadow-sm">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-[#006837] mb-4 pb-2 border-b border-gray-100">
-            Direct Travel Costs
-          </h2>
-          <div className="grid grid-cols-2 gap-4">
+        <div style={sectionStyle}>
+          <div style={sectionTitleStyle}>③ Direct Travel Costs</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
             <div>
-              <label className={labelCls}>By Air (GH¢)</label>
-              <input
-                type="number"
-                step="0.01"
-                min={0}
-                {...register("byAir")}
-                className={inputCls}
-                placeholder="0.00"
-              />
+              <label style={labelStyle}>By Air (GH¢)</label>
+              <input type="number" step="0.01" min={0} {...register("byAir")} style={inputStyle} placeholder="0.00" />
             </div>
             <div>
-              <label className={labelCls}>By Rail (GH¢)</label>
-              <input
-                type="number"
-                step="0.01"
-                min={0}
-                {...register("byRail")}
-                className={inputCls}
-                placeholder="0.00"
-              />
+              <label style={labelStyle}>By Rail (GH¢)</label>
+              <input type="number" step="0.01" min={0} {...register("byRail")} style={inputStyle} placeholder="0.00" />
             </div>
             <div>
-              <label className={labelCls}>Private Vehicle — Miles</label>
-              <input
-                type="number"
-                min={0}
-                {...register("privateVehicleMiles")}
-                className={inputCls}
-                placeholder="0"
-              />
+              <label style={labelStyle}>Private Vehicle — Miles</label>
+              <input type="number" min={0} {...register("privateVehicleMiles")} style={inputStyle} placeholder="0" />
             </div>
             <div>
-              <label className={labelCls}>Rate per Mile (GH¢)</label>
-              <input
-                type="number"
-                step="0.01"
-                min={0}
-                {...register("privateVehicleRate")}
-                className={inputCls}
-                placeholder="0.00"
-              />
+              <label style={labelStyle}>Rate per Mile (GH¢)</label>
+              <input type="number" step="0.01" min={0} {...register("privateVehicleRate")} style={inputStyle} placeholder="0.00" />
             </div>
+
             {vehicleTotal > 0 && (
-              <div className="col-span-2">
-                <p className="text-xs text-gray-500">
-                  Vehicle subtotal:{" "}
-                  <span className="font-mono font-semibold text-gray-700">
-                    GH¢ {vehicleTotal.toFixed(2)}
-                  </span>
-                </p>
+              <div style={{ gridColumn: "1 / -1" }}>
+                <div style={{
+                  background: "#e8f0ff", borderRadius: 6, padding: "8px 12px",
+                  fontSize: 12, color: "#0052cc", fontWeight: 600,
+                }}>
+                  Vehicle subtotal: <span style={{ fontFamily: "monospace" }}>GH¢ {vehicleTotal.toFixed(2)}</span>
+                </div>
               </div>
             )}
+
             <div>
-              <label className={labelCls}>Tolls etc. (GH¢)</label>
-              <input
-                type="number"
-                step="0.01"
-                min={0}
-                {...register("tolls")}
-                className={inputCls}
-                placeholder="0.00"
-              />
+              <label style={labelStyle}>Tolls etc. (GH¢)</label>
+              <input type="number" step="0.01" min={0} {...register("tolls")} style={inputStyle} placeholder="0.00" />
             </div>
             <div>
-              <label className={labelCls}>Miscellaneous (GH¢)</label>
-              <input
-                type="number"
-                step="0.01"
-                min={0}
-                {...register("miscellaneous")}
-                className={inputCls}
-                placeholder="0.00"
-              />
+              <label style={labelStyle}>Miscellaneous (GH¢)</label>
+              <input type="number" step="0.01" min={0} {...register("miscellaneous")} style={inputStyle} placeholder="0.00" />
             </div>
           </div>
-        </section>
+        </div>
 
         {/* ── Section 4: Account & Total ── */}
-        <section className="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-sm">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-[#006837] mb-4 pb-2 border-b border-gray-100">
-            Account Code & Total
-          </h2>
-          <div className="grid grid-cols-2 gap-4 items-end">
+        <div style={sectionStyle}>
+          <div style={sectionTitleStyle}>④ Account Code &amp; Total</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, alignItems: "end" }}>
             <div>
-              <label className={labelCls}>Account Code</label>
-              <input
-                {...register("accountCode")}
-                className={inputCls}
-                placeholder="Account / code"
-              />
+              <label style={labelStyle}>Account Code</label>
+              <input {...register("accountCode")} style={inputStyle} placeholder="Account / code" />
             </div>
             <div>
-              <label className={labelCls}>Total Amount (auto)</label>
-              <div className="border border-[#006837] bg-[#006837]/5 rounded px-3 py-2 text-base font-bold font-mono text-[#006837]">
+              <label style={labelStyle}>Total Amount (auto)</label>
+              <div style={{
+                border: "2px solid #0052cc", borderRadius: 8, padding: "10px 14px",
+                background: "#e8f0ff", color: "#0052cc", fontSize: 16,
+                fontWeight: 800, fontFamily: "monospace",
+              }}>
                 GH¢ {total.toFixed(2)}
               </div>
             </div>
           </div>
-        </section>
+        </div>
 
+        {/* ── Error ── */}
         {error && (
-          <p className="text-red-600 text-sm mb-4 bg-red-50 border border-red-200 rounded px-3 py-2">
-            {error}
-          </p>
+          <div style={{
+            background: "#fef2f2", border: "1.5px solid #fca5a5", borderRadius: 8,
+            padding: "10px 16px", color: "#dc2626", fontSize: 13, marginBottom: 16,
+          }}>
+            ⚠ {error}
+          </div>
         )}
 
-        <div className="flex justify-between items-center">
-          <p className="text-xs text-gray-400">
+        {/* ── Footer actions ── */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 8 }}>
+          <p style={{ fontSize: 12, color: "#94a3b8", margin: 0 }}>
             Signature fields appear on the printed voucher only.
           </p>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-[#006837] text-white px-8 py-2.5 rounded-lg font-semibold hover:bg-[#004d28] transition disabled:opacity-60"
+            style={{
+              background: isSubmitting ? "#7aa7e0" : "#0052cc",
+              color: "#fff", border: "none", borderRadius: 8,
+              padding: "12px 32px", fontWeight: 700, fontSize: 14,
+              cursor: isSubmitting ? "not-allowed" : "pointer",
+              boxShadow: "0 4px 14px rgba(0,82,204,0.35)",
+            }}
           >
             {isSubmitting ? "Saving…" : "Save & Print Voucher →"}
           </button>

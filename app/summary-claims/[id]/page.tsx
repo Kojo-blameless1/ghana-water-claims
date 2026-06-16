@@ -400,7 +400,7 @@ export default function ViewSummaryClaim() {
             padding: 10mm 14mm !important;
             border: none !important;
             box-shadow: none !important;
-          }
+          }5l6t
           #gwl-toolbar { display: none !important; }
         }
       `,
