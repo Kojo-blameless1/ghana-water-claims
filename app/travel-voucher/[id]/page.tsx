@@ -2,6 +2,19 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
+type ItineraryRow = {
+  depPlace: string;
+  depDate: string;
+  depHour: string;
+  arrPlace: string;
+  arrDate: string;
+  arrHour: string;
+  mileageStandard: number;
+  mileageSubstandard: number;
+  radius: number;
+  conveyanceAmount: number;
+};
+
 type Voucher = {
   id: number;
   employee: string;
@@ -10,521 +23,324 @@ type Voucher = {
   activity: string;
   purpose: string;
   allowanceMonth: string;
-  hotelNights: number | null;
-  hotelPerNight: number | null;
-  hotelActual: number | null;
-  byAir: number | null;
-  byRail: number | null;
-  privateVehicleMiles: number | null;
-  privateVehicleRate: number | null;
-  tolls: number | null;
-  miscellaneous: number | null;
+  hotelNights: number;
+  hotelPerNight: number;
+  hotelActual: number;
+  byAir: number;
+  byRail: number;
+  privateVehicleMiles: number;
+  privateVehicleRate: number;
+  tolls: number;
+  miscellaneous: number;
   totalAmount: number;
-  accountCode: string | null;
-  date: string | null;
+  accountCode: string;
+  date: string;
+  itineraryEntries: string;
 };
 
-const fmt = (n: number | null | undefined) =>
-  n != null && n !== 0 ? n.toFixed(2) : "";
+const f = (n: number) => (n && n !== 0 ? `GH¢ ${n.toFixed(2)}` : "—");
+const MIN_ITIN_ROWS = 15;
 
 export default function ViewTravelVoucher() {
-  const params = useParams();
-  const id = params?.id;
+  const { id } = useParams();
   const [voucher, setVoucher] = useState<Voucher | null>(null);
   const [loading, setLoading] = useState(true);
-  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id) return;
     fetch(`/api/travel-voucher/${id}`)
       .then((r) => r.json())
-      .then((d) => {
-        if (d?.error) {
-          setFetchError(d.error);
-          setLoading(false);
-        } else {
-          setVoucher(d);
-          setLoading(false);
-        }
-      })
-      .catch((e) => {
-        setFetchError(e.message);
-        setLoading(false);
-      });
+      .then((d) => { setVoucher(d); setLoading(false); })
+      .catch(() => setLoading(false));
   }, [id]);
 
   if (loading)
     return (
-      <div
-        style={{
-          padding: 40,
-          textAlign: "center",
-          fontFamily: "sans-serif",
-          color: "#555",
-        }}
-      >
-        Loading voucher…
-      </div>
-    );
-  if (fetchError)
-    return (
-      <div
-        style={{
-          padding: 40,
-          textAlign: "center",
-          fontFamily: "sans-serif",
-          color: "red",
-        }}
-      >
-        Error: {fetchError}
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f0f4ff", fontFamily: "'Inter','Segoe UI',sans-serif" }}>
+        <div style={{ color: "#0052cc", fontSize: 14, fontWeight: 600 }}>Loading voucher…</div>
       </div>
     );
   if (!voucher)
     return (
-      <div
-        style={{
-          padding: 40,
-          textAlign: "center",
-          fontFamily: "sans-serif",
-          color: "red",
-        }}
-      >
-        Voucher not found.
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f0f4ff", fontFamily: "'Inter','Segoe UI',sans-serif" }}>
+        <div style={{ color: "#dc2626", fontSize: 14 }}>Voucher not found.</div>
       </div>
     );
 
-  const vehicleTotal =
-    (voucher.privateVehicleMiles || 0) * (voucher.privateVehicleRate || 0);
+  const itinEntries: ItineraryRow[] = JSON.parse(voucher.itineraryEntries || "[]");
+  const itinRows: (ItineraryRow | null)[] = [
+    ...itinEntries,
+    ...Array(Math.max(0, MIN_ITIN_ROWS - itinEntries.length)).fill(null),
+  ];
+  const totalMileageStd = itinEntries.reduce((s, r) => s + (r.mileageStandard || 0), 0);
+  const totalMileageSub = itinEntries.reduce((s, r) => s + (r.mileageSubstandard || 0), 0);
+  const totalConveyance = itinEntries.reduce((s, r) => s + (r.conveyanceAmount || 0), 0);
 
-  const page: React.CSSProperties = {
-    maxWidth: 720,
-    margin: "24px auto 48px",
-    padding: "36px 48px",
+  /* ── Print table cell styles ── */
+  const th = (extra: React.CSSProperties = {}): React.CSSProperties => ({
+    border: "1px solid #000", padding: "3px 4px", textAlign: "center",
+    fontWeight: "bold", background: "#e8e8e8", fontSize: 8,
+    verticalAlign: "middle", ...extra,
+  });
+  const td = (extra: React.CSSProperties = {}): React.CSSProperties => ({
+    border: "1px solid #000", padding: "2px 4px", fontSize: 8.5, height: 22, ...extra,
+  });
+
+  const docStyle: React.CSSProperties = {
+    maxWidth: 900,
+    margin: "24px auto",
+    padding: "32px 40px",
     background: "#fff",
     border: "1px solid #ccc",
     fontFamily: "'Times New Roman', Times, serif",
-    fontSize: 10,
+    fontSize: 9,
     color: "#000",
     boxShadow: "0 2px 12px rgba(0,0,0,0.10)",
   };
 
-  // Field row: label on left, value sits ON the underline
-  const FieldRow = ({ label, value }: { label: string; value: string }) => (
-    <div style={{ display: "flex", alignItems: "flex-end", marginBottom: 6 }}>
-      <span
-        style={{
-          fontWeight: "bold",
-          whiteSpace: "nowrap",
-          minWidth: 220,
-          fontSize: 10,
-        }}
-      >
-        {label}
-      </span>
-      <span
-        style={{
-          flex: 1,
-          borderBottom: "1px solid #000",
-          paddingLeft: 4,
-          paddingBottom: 1,
-          fontSize: 10,
-          minHeight: 17,
-          lineHeight: "17px",
-        }}
-      >
-        {value}
-      </span>
-    </div>
-  );
-
-  const tbl: React.CSSProperties = {
-    width: "100%",
-    borderCollapse: "collapse",
-    margin: "12px 0 8px",
-    fontSize: 9.5,
-  };
-  const th = (extra: React.CSSProperties = {}): React.CSSProperties => ({
-    border: "1px solid #000",
-    padding: "3px 5px",
-    textAlign: "center",
-    fontWeight: "bold",
-    background: "#efefef",
-    fontSize: 9,
-    ...extra,
-  });
-  const td = (extra: React.CSSProperties = {}): React.CSSProperties => ({
-    border: "1px solid #000",
-    padding: "3px 6px",
-    fontSize: 9.5,
-    ...extra,
-  });
-  const tdR = (extra: React.CSSProperties = {}): React.CSSProperties => ({
-    ...td(),
-    textAlign: "right",
-    fontFamily: "monospace",
-    ...extra,
-  });
-
-  // Signature row: DATE line on left, role bold on right
-  const SigRow = ({ role }: { role: string }) => (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "flex-end",
-        borderBottom: "1px dotted #000",
-        paddingBottom: 2,
-        marginTop: 16,
-        fontSize: 9,
-      }}
-    >
-      <span>DATE ................................</span>
-      <span style={{ fontWeight: "bold" }}>{role}</span>
+  const docHeader = (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+      <img src="/logo.png" alt="GWL Logo" style={{ width: 56, height: 56, objectFit: "contain" }} />
+      <div style={{ textAlign: "center", flex: 1 }}>
+        <div style={{ fontWeight: "bold", fontSize: 13, letterSpacing: 0.5 }}>GHANA WATER LIMITED</div>
+        <div style={{ fontSize: 10 }}>ASHANTI SOUTH REGION</div>
+      </div>
+      <div style={{ fontSize: 9, textAlign: "right", lineHeight: 1.9 }}>
+        <div>Original</div>
+        <div>Duplicate</div>
+      </div>
     </div>
   );
 
   return (
     <>
-      {/* Screen toolbar */}
-      <div
-        id="gwl-toolbar"
-        style={{
-          background: "#3937b5",
-          padding: "10px 24px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <span style={{ color: "#fff", fontWeight: 600, fontSize: 14 }}>
-          GWL Travel Voucher #{voucher.id}
-        </span>
+      {/* ── Screen toolbar ── */}
+      <div id="gwl-toolbar" style={{
+        background: "#0052cc", padding: "0 24px",
+        display: "flex", justifyContent: "space-between", alignItems: "center",
+        height: 60, boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <img src="/logo.png" alt="GWL" style={{ height: 34, width: 34, objectFit: "contain", borderRadius: 4 }} />
+          <div style={{ width: 1, height: 28, background: "rgba(255,255,255,0.25)" }} />
+          <span style={{ color: "#fff", fontWeight: 600, fontSize: 14 }}>
+            Voucher #{voucher.id} — {voucher.employee} — {voucher.allowanceMonth}
+          </span>
+        </div>
         <div style={{ display: "flex", gap: 8 }}>
           <button
             onClick={() => window.history.back()}
-            style={{
-              color: "#fff",
-              border: "1px solid rgba(255,255,255,0.4)",
-              background: "transparent",
-              padding: "4px 12px",
-              borderRadius: 4,
-              cursor: "pointer",
-              fontSize: 13,
-            }}
+            style={{ color: "#fff", border: "1px solid rgba(255,255,255,0.4)", background: "transparent", padding: "6px 14px", borderRadius: 6, cursor: "pointer", fontSize: 13 }}
           >
             ← Back
           </button>
           <button
             onClick={() => window.print()}
-            style={{
-              background: "#fff",
-              color: "#0e740b",
-              fontWeight: 700,
-              padding: "4px 16px",
-              borderRadius: 4,
-              cursor: "pointer",
-              fontSize: 13,
-              border: "none",
-            }}
+            style={{ background: "#fff", color: "#0052cc", fontWeight: 700, padding: "6px 18px", borderRadius: 6, cursor: "pointer", fontSize: 13, border: "none" }}
           >
-            🖨 Print Voucher
+            🖨 Print Both Pages
           </button>
         </div>
       </div>
 
-      {/* Printable document */}
-      <div id="gwl-print-page" style={page}>
-        {/* Header */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "flex-start",
-            justifyContent: "space-between",
-            marginBottom: 8,
-          }}
-        >
-          <img
-            src="/logo.png"
-            alt="GWL Logo"
-            style={{ width: 64, height: 64, objectFit: "contain" }}
-          />
-          <div style={{ textAlign: "center", flex: 1 }}>
-            <div
-              style={{ fontWeight: "bold", fontSize: 15, letterSpacing: 0.5 }}
-            >
-              GHANA WATER LIMITED
-            </div>
-            <div style={{ fontSize: 12 }}>ASHANTI SOUTH REGION</div>
-            <div
-              style={{
-                fontSize: 12,
-                textDecoration: "underline",
-                fontWeight: "bold",
-              }}
-            >
-              TRAVEL EXPENSE VOUCHER
-            </div>
-          </div>
-          <div style={{ fontSize: 9, textAlign: "right", lineHeight: 1.9 }}>
-            <div>Original</div>
-            <div>Duplicate</div>
-          </div>
+      {/* ══════════════ PAGE 1: TRAVEL VOUCHER ══════════════ */}
+      <div id="gwl-page-1" style={docStyle}>
+        {docHeader}
+        <hr style={{ borderTop: "1.5px solid #000", margin: "6px 0 10px" }} />
+        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: 12, textDecoration: "underline", marginBottom: 12 }}>
+          TRAVEL EXPENSE VOUCHER
         </div>
 
-        <hr style={{ borderTop: "1.5px solid #000", margin: "8px 0 10px" }} />
-
-        {/* Employee fields — value sits on the line */}
-        <FieldRow label="EMPLOYEE:" value={voucher.employee} />
-        <FieldRow label="POST:" value={voucher.post} />
-        <FieldRow label="DISTRICT:" value={voucher.district} />
-        <FieldRow label="ACTIVITY:" value={voucher.activity || ""} />
-        <FieldRow label="PURPOSE OF TRAVEL:" value={voucher.purpose} />
-        <FieldRow
-          label="ALLOWANCE FOR THE MONTH:"
-          value={voucher.allowanceMonth}
-        />
-
-        {/* Expense table */}
-        <table style={tbl}>
-          <thead>
-            <tr>
-              <th style={th({ width: "38%", textAlign: "left" })}></th>
-              <th style={th({ width: "44%" })}></th>
-              <th style={th({ width: "18%" })}>Actual</th>
-            </tr>
-          </thead>
+        {/* Employee info grid */}
+        <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 10, fontSize: 9 }}>
           <tbody>
             <tr>
-              <td style={{ ...td(), fontStyle: "italic" }}>
-                Hotel/Guest House
-              </td>
-              <td style={td()}>
-                {voucher.hotelNights ?? "........"} Nights &nbsp;&nbsp; GH¢{" "}
-                {fmt(voucher.hotelPerNight) || "............"} &nbsp; per day
-                Lodging
-              </td>
-              <td style={tdR()}>{fmt(voucher.hotelActual)}</td>
+              <td style={td({ width: "15%", fontWeight: "bold" })}>EMPLOYEE:</td>
+              <td style={td({ width: "35%" })}>{voucher.employee}</td>
+              <td style={td({ width: "15%", fontWeight: "bold" })}>POST:</td>
+              <td style={td({ width: "35%" })}>{voucher.post}</td>
             </tr>
             <tr>
-              <td
-                colSpan={2}
-                style={{ ...td(), fontWeight: "bold", background: "#f8f8f8" }}
-              >
-                Direct Travel Cost
-              </td>
-              <td style={td()}></td>
+              <td style={td({ fontWeight: "bold" })}>DISTRICT:</td>
+              <td style={td()}>{voucher.district}</td>
+              <td style={td({ fontWeight: "bold" })}>DATE:</td>
+              <td style={td()}>{voucher.date}</td>
             </tr>
             <tr>
-              <td style={{ ...td(), fontStyle: "italic", paddingLeft: 14 }}>
-                By Air
-              </td>
-              <td style={td()}>GH¢ &nbsp; {fmt(voucher.byAir)}</td>
-              <td style={tdR()}></td>
+              <td style={td({ fontWeight: "bold" })}>ACTIVITY:</td>
+              <td style={td()}>{voucher.activity}</td>
+              <td style={td({ fontWeight: "bold" })}>MONTH:</td>
+              <td style={td()}>{voucher.allowanceMonth}</td>
             </tr>
             <tr>
-              <td style={{ ...td(), fontStyle: "italic", paddingLeft: 14 }}>
-                By Rail
-              </td>
-              <td style={td()}>GH¢ &nbsp; {fmt(voucher.byRail)}</td>
-              <td style={tdR()}></td>
-            </tr>
-            <tr>
-              <td style={{ ...td(), fontStyle: "italic", paddingLeft: 14 }}>
-                By Private Vehicle
-              </td>
-              <td style={td()}>
-                {voucher.privateVehicleMiles ?? "......"} Miles &nbsp; at &nbsp;
-                GH¢ {fmt(voucher.privateVehicleRate) || "......"} &nbsp; per
-                mile
-              </td>
-              <td style={tdR()}>
-                {vehicleTotal > 0 ? vehicleTotal.toFixed(2) : ""}
-              </td>
-            </tr>
-            <tr>
-              <td style={{ ...td(), fontStyle: "italic", paddingLeft: 14 }}>
-                Toll, etc.
-              </td>
-              <td style={td()}>GH¢ &nbsp; {fmt(voucher.tolls)}</td>
-              <td style={tdR()}></td>
-            </tr>
-            <tr>
-              <td style={{ ...td(), fontStyle: "italic", paddingLeft: 14 }}>
-                Miscellaneous
-              </td>
-              <td style={td()}>GH¢ &nbsp; {fmt(voucher.miscellaneous)}</td>
-              <td style={tdR()}></td>
-            </tr>
-            <tr>
-              <td style={td()}></td>
-              <td style={td()}>GH¢</td>
-              <td style={tdR()}></td>
-            </tr>
-            <tr>
-              <td
-                colSpan={2}
-                style={{ ...td(), textAlign: "right", fontStyle: "italic" }}
-              >
-                Miscellaneous
-              </td>
-              <td style={tdR()}>{fmt(voucher.miscellaneous)}</td>
-            </tr>
-            <tr>
-              <td
-                colSpan={2}
-                style={{ ...td(), textAlign: "right", fontWeight: "bold" }}
-              >
-                TOTAL
-              </td>
-              <td style={{ ...tdR(), fontWeight: "bold" }}>
-                {voucher.totalAmount?.toFixed(2)}
-              </td>
+              <td style={td({ fontWeight: "bold" })}>PURPOSE:</td>
+              <td style={td({ colSpan: 3 } as any)} colSpan={3}>{voucher.purpose}</td>
             </tr>
           </tbody>
         </table>
 
-        {/* Account & Code */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            marginTop: 8,
-            fontSize: 9.5,
-          }}
-        >
-          <span style={{ fontWeight: "bold" }}>Account</span>
-          <span
-            style={{
-              border: "1px solid #000",
-              minWidth: 100,
-              height: 20,
-              display: "inline-flex",
-              alignItems: "center",
-              padding: "0 4px",
-              fontSize: 9.5,
-            }}
-          >
-            {voucher.accountCode || ""}
-          </span>
-          <span style={{ fontWeight: "bold" }}>Code</span>
-          <span
-            style={{
-              border: "1px solid #000",
-              minWidth: 80,
-              height: 20,
-              display: "inline-block",
-            }}
-          ></span>
-        </div>
+        {/* Expenses table */}
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 9, marginBottom: 10 }}>
+          <thead>
+            <tr>
+              <th style={th({ width: "50%" })}>DESCRIPTION</th>
+              <th style={th()}>AMOUNT (GH¢)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style={td()}>Hotel / Guest House Lodging ({voucher.hotelNights} nights × GH¢ {voucher.hotelPerNight?.toFixed(2)})</td>
+              <td style={td({ textAlign: "right", fontFamily: "monospace" })}>{voucher.hotelActual ? voucher.hotelActual.toFixed(2) : "—"}</td>
+            </tr>
+            <tr>
+              <td style={td()}>By Air</td>
+              <td style={td({ textAlign: "right", fontFamily: "monospace" })}>{voucher.byAir ? voucher.byAir.toFixed(2) : "—"}</td>
+            </tr>
+            <tr>
+              <td style={td()}>By Rail</td>
+              <td style={td({ textAlign: "right", fontFamily: "monospace" })}>{voucher.byRail ? voucher.byRail.toFixed(2) : "—"}</td>
+            </tr>
+            <tr>
+              <td style={td()}>Private Vehicle ({voucher.privateVehicleMiles} miles × GH¢ {voucher.privateVehicleRate?.toFixed(2)})</td>
+              <td style={td({ textAlign: "right", fontFamily: "monospace" })}>
+                {voucher.privateVehicleMiles && voucher.privateVehicleRate
+                  ? (voucher.privateVehicleMiles * voucher.privateVehicleRate).toFixed(2) : "—"}
+              </td>
+            </tr>
+            <tr>
+              <td style={td()}>Tolls / Other</td>
+              <td style={td({ textAlign: "right", fontFamily: "monospace" })}>{voucher.tolls ? voucher.tolls.toFixed(2) : "—"}</td>
+            </tr>
+            <tr>
+              <td style={td()}>Miscellaneous</td>
+              <td style={td({ textAlign: "right", fontFamily: "monospace" })}>{voucher.miscellaneous ? voucher.miscellaneous.toFixed(2) : "—"}</td>
+            </tr>
+            <tr>
+              <td style={td({ fontWeight: "bold", background: "#e8e8e8" })}>TOTAL</td>
+              <td style={td({ textAlign: "right", fontFamily: "monospace", fontWeight: "bold", background: "#e8e8e8" })}>{voucher.totalAmount.toFixed(2)}</td>
+            </tr>
+          </tbody>
+        </table>
 
-        {/* Date + Claimant */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-end",
-            marginTop: 16,
-            fontSize: 9.5,
-          }}
-        >
-          <span>
-            DATE: {voucher.date || "........................"} &nbsp;&nbsp;
-            20......
-          </span>
-          <div style={{ textAlign: "right" }}>
-            <div
-              style={{
-                borderBottom: "1px dotted #000",
-                minWidth: 200,
-                marginBottom: 2,
-              }}
-            >
-              &nbsp;
-            </div>
-            <strong style={{ fontSize: 9 }}>CLAIMANT</strong>
+        {voucher.accountCode && (
+          <div style={{ fontSize: 9, marginBottom: 10 }}>
+            <strong>ACCOUNT CODE:</strong> {voucher.accountCode}
           </div>
-        </div>
+        )}
 
-        <hr style={{ borderTop: "1px solid #000", margin: "14px 0 4px" }} />
-
-        {/* Signature rows */}
-        <SigRow role="D.D.O. / D.C.O." />
-        <SigRow role="DISTRICT/UNIT HEAD" />
-        <SigRow role="SECTIONAL HEAD" />
-        <SigRow role="REGIONAL CHIEF MANAGER" />
-        <div style={{ fontSize: 9, marginTop: 6, fontStyle: "italic" }}>
-          Approved &nbsp;&nbsp; DATE ..............................
-        </div>
-
-        <hr style={{ borderTop: "1px solid #000", margin: "14px 0 8px" }} />
-
-        {/* Receipt */}
-        <div style={{ fontSize: 9, lineHeight: 2.2 }}>
-          Received this .................. day of
-          .................................. 20...... in payment of the above
-          account the sum of ............................................
-        </div>
-        <div
-          style={{
-            borderTop: "1px dotted #000",
-            marginTop: 12,
-            paddingTop: 4,
-            fontSize: 9,
-          }}
-        >
-          Witness to Mark and Payments ..................................
-        </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            marginTop: 14,
-            fontSize: 9,
-          }}
-        >
-          <div style={{ textAlign: "center" }}>
-            <div
-              style={{
-                borderBottom: "1px dotted #000",
-                minWidth: 220,
-                marginBottom: 3,
-              }}
-            >
-              &nbsp;
+        {/* Signatures */}
+        <div style={{ marginTop: 28, display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 24, fontSize: 9 }}>
+          {["CLAIMANT", "RECOMMENDED BY", "APPROVED BY"].map((label) => (
+            <div key={label}>
+              <div style={{ borderTop: "1px solid #000", paddingTop: 2, marginTop: 32, textAlign: "center", fontWeight: "bold" }}>
+                {label}
+              </div>
             </div>
-            <div>
-              <strong>Signature of Receiver</strong>
-            </div>
-            <div>
-              <strong>G.W.L. ACCTS. FORMS 8</strong>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 
-      {/* Print CSS */}
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
+      {/* ══════════════ PAGE 2: ITINERARY ══════════════ */}
+      <div id="gwl-page-2" style={{ ...docStyle, marginTop: 0, borderTop: "none" }}>
+        {docHeader}
+        <hr style={{ borderTop: "1.5px solid #000", margin: "6px 0 10px" }} />
+        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: 12, textDecoration: "underline", marginBottom: 12 }}>
+          ITINERARY
+        </div>
+
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 8 }}>
+          <thead>
+            <tr>
+              <th style={th({ width: 20 })}>#</th>
+              <th style={th()} colSpan={3}>DEPARTURE FROM</th>
+              <th style={th()} colSpan={3}>ARRIVAL AT</th>
+              <th style={th()} colSpan={2}>MILEAGE</th>
+              <th style={th()}>RADIUS</th>
+              <th style={th()}>MEANS OF CONVEYANCE (GH¢)</th>
+            </tr>
+            <tr>
+              <th style={th({ fontSize: 7 })}></th>
+              <th style={th({ fontSize: 7 })}>PLACE</th>
+              <th style={th({ fontSize: 7 })}>DATE</th>
+              <th style={th({ fontSize: 7 })}>HOUR</th>
+              <th style={th({ fontSize: 7 })}>PLACE</th>
+              <th style={th({ fontSize: 7 })}>DATE</th>
+              <th style={th({ fontSize: 7 })}>HOUR</th>
+              <th style={th({ fontSize: 7 })}>STANDARD</th>
+              <th style={th({ fontSize: 7 })}>SUB-STANDARD</th>
+              <th style={th({ fontSize: 7 })}></th>
+              <th style={th({ fontSize: 7 })}></th>
+            </tr>
+          </thead>
+          <tbody>
+            {itinRows.map((row, i) => (
+              <tr key={i}>
+                <td style={td({ textAlign: "center", color: "#888", fontSize: 7 })}>{i + 1}</td>
+                <td style={td()}>{row?.depPlace || ""}</td>
+                <td style={td({ textAlign: "center" })}>{row?.depDate || ""}</td>
+                <td style={td({ textAlign: "center" })}>{row?.depHour || ""}</td>
+                <td style={td()}>{row?.arrPlace || ""}</td>
+                <td style={td({ textAlign: "center" })}>{row?.arrDate || ""}</td>
+                <td style={td({ textAlign: "center" })}>{row?.arrHour || ""}</td>
+                <td style={td({ textAlign: "right", fontFamily: "monospace" })}>{row?.mileageStandard ? row.mileageStandard.toFixed(2) : ""}</td>
+                <td style={td({ textAlign: "right", fontFamily: "monospace" })}>{row?.mileageSubstandard ? row.mileageSubstandard.toFixed(2) : ""}</td>
+                <td style={td({ textAlign: "right", fontFamily: "monospace" })}>{row?.radius ? row.radius.toFixed(2) : ""}</td>
+                <td style={td({ textAlign: "right", fontFamily: "monospace" })}>{row?.conveyanceAmount ? row.conveyanceAmount.toFixed(2) : ""}</td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colSpan={7} style={td({ textAlign: "right", fontWeight: "bold", background: "#e8e8e8" })}>TOTAL MILEAGE</td>
+              <td style={td({ textAlign: "right", fontFamily: "monospace", fontWeight: "bold", background: "#e8e8e8" })}>{totalMileageStd.toFixed(2)}</td>
+              <td style={td({ textAlign: "right", fontFamily: "monospace", fontWeight: "bold", background: "#e8e8e8" })}>{totalMileageSub.toFixed(2)}</td>
+              <td style={td({ background: "#e8e8e8" })}></td>
+              <td style={td({ textAlign: "right", fontFamily: "monospace", fontWeight: "bold", background: "#e8e8e8" })}>{totalConveyance.toFixed(2)}</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        {/* Signatures */}
+        <div style={{ marginTop: 28, display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 24, fontSize: 9 }}>
+          {["CLAIMANT", "RECOMMENDED BY", "APPROVED BY"].map((label) => (
+            <div key={label}>
+              <div style={{ borderTop: "1px solid #000", paddingTop: 2, marginTop: 32, textAlign: "center", fontWeight: "bold" }}>
+                {label}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Print CSS ── */}
+      <style dangerouslySetInnerHTML={{ __html: `
         @media print {
           body * { visibility: hidden; }
-          #gwl-print-page, #gwl-print-page * { visibility: visible; }
-          #gwl-print-page {
+          #gwl-page-1, #gwl-page-1 *,
+          #gwl-page-2, #gwl-page-2 * { visibility: visible; }
+          #gwl-toolbar { display: none !important; }
+          #gwl-page-1 {
             position: fixed;
             top: 0; left: 0;
             width: 100%;
             max-width: 100% !important;
             margin: 0 !important;
-            padding: 14mm 20mm !important;
+            padding: 10mm 14mm !important;
+            border: none !important;
+            box-shadow: none !important;
+            page-break-after: always;
+          }
+          #gwl-page-2 {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 10mm 14mm !important;
             border: none !important;
             box-shadow: none !important;
           }
-          #gwl-toolbar { display: none !important; }
         }
-      `,
-        }}
-      />
+      ` }} />
     </>
   );
 }

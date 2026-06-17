@@ -1,8 +1,4 @@
-
-"use client";
-
 import Link from "next/link";
-
 import prisma from "@/lib/prisma";
 
 export default async function Home() {
@@ -18,161 +14,145 @@ export default async function Home() {
     },
   });
 
-  return (
-    <div style={{ minHeight: "100vh", background: "#f0f4f8", fontFamily: "'Segoe UI', Arial, sans-serif" }}>
+  const recentSummaries = await prisma.summaryClaim.findMany({
+    take: 5,
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      district: true,
+      month: true,
+      createdAt: true,
+    },
+  });
 
-      {/* ── Top bar ── */}
-      <div style={{ background: "#003d99", height: 4 }} />
+  return (
+    <div style={{ minHeight: "100vh", background: "#f0f4ff", fontFamily: "'Inter', 'Segoe UI', sans-serif" }}>
 
       {/* ── Header ── */}
-      <header style={{ background: "#fff", borderBottom: "1px solid #dce6f7", boxShadow: "0 2px 8px rgba(0,61,153,0.07)" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "18px 24px", display: "flex", alignItems: "center", gap: 20 }}>
-          <img src="/logo.png" alt="Ghana Water Logo" style={{ height: 64, width: "auto" }} />
-          <div style={{ borderLeft: "3px solid #003d99", paddingLeft: 18 }}>
-            <div style={{ fontSize: 20, fontWeight: 800, color: "#003d99", letterSpacing: 0.5 }}>
+      <header style={{
+        background: "#0052cc",
+        boxShadow: "0 2px 12px rgba(0,0,0,0.15)",
+      }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", height: 68, display: "flex", alignItems: "center", gap: 20 }}>
+          <img src="/logo.png" alt="Ghana Water Logo" style={{ height: 44, width: "auto" }} />
+          <div style={{ width: 1, height: 32, background: "rgba(255,255,255,0.25)" }} />
+          <div>
+            <div style={{ fontSize: 16, fontWeight: 800, color: "#fff", letterSpacing: 0.3 }}>
               GHANA WATER LIMITED
             </div>
-            <div style={{ fontSize: 13, color: "#5a7abf", marginTop: 2, fontWeight: 500 }}>
+            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.65)", marginTop: 1 }}>
               Ashanti South Region &nbsp;·&nbsp; Travel &amp; Claims Management
             </div>
           </div>
-          <div style={{ marginLeft: "auto", fontSize: 11, color: "#8aa3cc", textAlign: "right", lineHeight: 1.7 }}>
-            <div style={{ fontWeight: 700, color: "#003d99", fontSize: 12 }}>GWL INTERNAL SYSTEM</div>
-            <div>Authorised Personnel Only</div>
+          <div style={{ marginLeft: "auto", textAlign: "right" }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#fff" }}>GWL INTERNAL SYSTEM</div>
+            <div style={{ fontSize: 10, color: "rgba(255,255,255,0.55)", marginTop: 1 }}>Authorised Personnel Only</div>
           </div>
         </div>
       </header>
 
       {/* ── Hero Banner ── */}
       <div style={{
-        background: "linear-gradient(135deg, #003d99 0%, #0055cc 60%, #1a6fd4 100%)",
-        padding: "40px 24px",
+        background: "linear-gradient(135deg, #003d99 0%, #0052cc 55%, #1a6bff 100%)",
+        padding: "48px 24px",
         textAlign: "center",
         position: "relative",
         overflow: "hidden",
       }}>
-        {/* Decorative circles */}
-        <div style={{ position: "absolute", top: -40, right: -40, width: 200, height: 200, borderRadius: "50%", background: "rgba(255,255,255,0.05)" }} />
-        <div style={{ position: "absolute", bottom: -60, left: -30, width: 260, height: 260, borderRadius: "50%", background: "rgba(255,255,255,0.04)" }} />
+        <div style={{ position: "absolute", top: -50, right: -50, width: 220, height: 220, borderRadius: "50%", background: "rgba(255,255,255,0.05)" }} />
+        <div style={{ position: "absolute", bottom: -70, left: -40, width: 280, height: 280, borderRadius: "50%", background: "rgba(255,255,255,0.04)" }} />
+        <div style={{ position: "absolute", top: 20, left: "20%", width: 120, height: 120, borderRadius: "50%", background: "rgba(255,255,255,0.03)" }} />
 
         <div style={{ position: "relative", zIndex: 1 }}>
-          <div style={{ fontSize: 13, color: "#a8c4ff", fontWeight: 600, letterSpacing: 2, textTransform: "uppercase", marginBottom: 10 }}>
+          <div style={{ fontSize: 11, color: "#a8c4ff", fontWeight: 700, letterSpacing: 3, textTransform: "uppercase", marginBottom: 12 }}>
             Claims Portal
           </div>
-          <h1 style={{ fontSize: 30, fontWeight: 800, color: "#fff", margin: "0 0 10px", letterSpacing: 0.3 }}>
+          <h1 style={{ fontSize: 32, fontWeight: 800, color: "#fff", margin: "0 0 12px", letterSpacing: 0.3 }}>
             Submit and Track Your Claims
           </h1>
-          <p style={{ color: "#c0d6ff", fontSize: 14, maxWidth: 520, margin: "0 auto" }}>
-            Create travel vouchers, summary claims, and itinerary logs — then print them instantly.
+          <p style={{ color: "#c0d6ff", fontSize: 14, maxWidth: 500, margin: "0 auto" }}>
+            Create travel vouchers and summary claims — then print them instantly for approval.
           </p>
         </div>
       </div>
 
-      <main style={{ maxWidth: 1100, margin: "0 auto", padding: "36px 24px" }}>
+      <main style={{ maxWidth: 1100, margin: "0 auto", padding: "40px 24px 60px" }}>
 
         {/* ── Action Cards ── */}
-        <div style={{ marginBottom: 8 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#5a7abf", letterSpacing: 2, textTransform: "uppercase", marginBottom: 16 }}>
+        <div style={{ marginBottom: 40 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: "#0052cc", letterSpacing: 2, textTransform: "uppercase", marginBottom: 16 }}>
             Create New
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 20 }}>
 
-            {/* Travel Voucher */}
+            {/* Travel Voucher Card */}
             <Link href="/travel-voucher/new" style={{ textDecoration: "none" }}>
               <div style={{
                 background: "#fff",
-                borderRadius: 12,
-                padding: "28px 24px",
-                border: "1px solid #dce6f7",
-                borderTop: "4px solid #003d99",
-                boxShadow: "0 2px 8px rgba(0,61,153,0.06)",
-                transition: "box-shadow 0.2s, transform 0.2s",
+                borderRadius: 14,
+                padding: "32px 28px",
+                border: "1px solid #dce7ff",
+                borderTop: "4px solid #0052cc",
+                boxShadow: "0 2px 8px rgba(0,82,204,0.07)",
                 cursor: "pointer",
-              }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 24px rgba(0,61,153,0.14)";
-                  (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = "0 2px 8px rgba(0,61,153,0.06)";
-                  (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-                }}
-              >
-                <div style={{ fontSize: 28, marginBottom: 12 }}>✈️</div>
-                <div style={{ fontSize: 16, fontWeight: 700, color: "#003d99", marginBottom: 8 }}>
+                height: "100%",
+                boxSizing: "border-box",
+              }}>
+                <div style={{
+                  width: 52, height: 52, borderRadius: 12,
+                  background: "#e8f0ff", display: "flex",
+                  alignItems: "center", justifyContent: "center",
+                  fontSize: 24, marginBottom: 16,
+                }}>✈️</div>
+                <div style={{ fontSize: 17, fontWeight: 700, color: "#0a2540", marginBottom: 8 }}>
                   Travel Expense Voucher
                 </div>
-                <p style={{ fontSize: 13, color: "#6b7a99", lineHeight: 1.6, margin: 0 }}>
-                  Submit a new travel claim, enter expenses, and print the completed voucher.
+                <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.7, margin: "0 0 20px" }}>
+                  Submit a new travel claim with expenses and itinerary. Prints as two pages — voucher and itinerary.
                 </p>
-                <div style={{ marginTop: 18, fontSize: 12, fontWeight: 700, color: "#003d99", display: "flex", alignItems: "center", gap: 4 }}>
-                  New Voucher <span style={{ fontSize: 14 }}>→</span>
+                <div style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  background: "#0052cc", color: "#fff",
+                  padding: "8px 18px", borderRadius: 8,
+                  fontSize: 12, fontWeight: 700,
+                }}>
+                  New Voucher <span>→</span>
                 </div>
               </div>
             </Link>
 
-            {/* Summary of Claims */}
+            {/* Summary of Claims Card */}
             <Link href="/summary-claims/new" style={{ textDecoration: "none" }}>
               <div style={{
                 background: "#fff",
-                borderRadius: 12,
-                padding: "28px 24px",
-                border: "1px solid #dce6f7",
-                borderTop: "4px solid #1a6fd4",
-                boxShadow: "0 2px 8px rgba(0,61,153,0.06)",
+                borderRadius: 14,
+                padding: "32px 28px",
+                border: "1px solid #dce7ff",
+                borderTop: "4px solid #1a6bff",
+                boxShadow: "0 2px 8px rgba(0,82,204,0.07)",
                 cursor: "pointer",
-              }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 24px rgba(0,61,153,0.14)";
-                  (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = "0 2px 8px rgba(0,61,153,0.06)";
-                  (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-                }}
-              >
-                <div style={{ fontSize: 28, marginBottom: 12 }}>📊</div>
-                <div style={{ fontSize: 16, fontWeight: 700, color: "#003d99", marginBottom: 8 }}>
+                height: "100%",
+                boxSizing: "border-box",
+              }}>
+                <div style={{
+                  width: 52, height: 52, borderRadius: 12,
+                  background: "#e8f0ff", display: "flex",
+                  alignItems: "center", justifyContent: "center",
+                  fontSize: 24, marginBottom: 16,
+                }}>📊</div>
+                <div style={{ fontSize: 17, fontWeight: 700, color: "#0a2540", marginBottom: 8 }}>
                   Summary of Claims
                 </div>
-                <p style={{ fontSize: 13, color: "#6b7a99", lineHeight: 1.6, margin: 0 }}>
-                  Enter monthly staff allowances per district and generate a printable summary sheet.
+                <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.7, margin: "0 0 20px" }}>
+                  Enter monthly staff allowances per district and generate a printable summary sheet for RCM approval.
                 </p>
-                <div style={{ marginTop: 18, fontSize: 12, fontWeight: 700, color: "#1a6fd4", display: "flex", alignItems: "center", gap: 4 }}>
-                  New Summary <span style={{ fontSize: 14 }}>→</span>
-                </div>
-              </div>
-            </Link>
-
-            {/* Itinerary */}
-            <Link href="/itinerary/new" style={{ textDecoration: "none" }}>
-              <div style={{
-                background: "#fff",
-                borderRadius: 12,
-                padding: "28px 24px",
-                border: "1px solid #dce6f7",
-                borderTop: "4px solid #4a90d9",
-                boxShadow: "0 2px 8px rgba(0,61,153,0.06)",
-                cursor: "pointer",
-              }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 24px rgba(0,61,153,0.14)";
-                  (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = "0 2px 8px rgba(0,61,153,0.06)";
-                  (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-                }}
-              >
-                <div style={{ fontSize: 28, marginBottom: 12 }}>🗺️</div>
-                <div style={{ fontSize: 16, fontWeight: 700, color: "#003d99", marginBottom: 8 }}>
-                  Itinerary Log
-                </div>
-                <p style={{ fontSize: 13, color: "#6b7a99", lineHeight: 1.6, margin: 0 }}>
-                  Record departure, arrival, mileage, radius, and conveyance costs per trip leg.
-                </p>
-                <div style={{ marginTop: 18, fontSize: 12, fontWeight: 700, color: "#4a90d9", display: "flex", alignItems: "center", gap: 4 }}>
-                  New Itinerary <span style={{ fontSize: 14 }}>→</span>
+                <div style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  background: "#1a6bff", color: "#fff",
+                  padding: "8px 18px", borderRadius: 8,
+                  fontSize: 12, fontWeight: 700,
+                }}>
+                  New Summary <span>→</span>
                 </div>
               </div>
             </Link>
@@ -180,107 +160,132 @@ export default async function Home() {
           </div>
         </div>
 
-        {/* ── Recent Vouchers Table ── */}
-        <div style={{
-          background: "#fff",
-          borderRadius: 12,
-          border: "1px solid #dce6f7",
-          boxShadow: "0 2px 8px rgba(0,61,153,0.06)",
-          marginTop: 36,
-          overflow: "hidden",
-        }}>
-          {/* Table header */}
+        {/* ── Recent Activity — two columns ── */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+
+          {/* Recent Travel Vouchers */}
           <div style={{
-            background: "linear-gradient(90deg, #003d99, #1a6fd4)",
-            padding: "16px 24px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
+            background: "#fff", borderRadius: 12,
+            border: "1px solid #dce7ff",
+            boxShadow: "0 2px 8px rgba(0,82,204,0.06)",
+            overflow: "hidden",
           }}>
-            <div style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>
-              Recent Travel Vouchers
+            <div style={{
+              background: "linear-gradient(90deg, #003d99, #0052cc)",
+              padding: "14px 20px",
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+            }}>
+              <div style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>Recent Vouchers</div>
+              <div style={{ fontSize: 11, color: "#a8c4ff" }}>Last 5</div>
             </div>
-            <div style={{ fontSize: 11, color: "#a8c4ff", fontWeight: 500 }}>
-              Last 5 submissions
-            </div>
+
+            {recentVouchers.length === 0 ? (
+              <div style={{ padding: "36px 20px", textAlign: "center" }}>
+                <div style={{ fontSize: 32, marginBottom: 10 }}>📄</div>
+                <div style={{ color: "#64748b", fontSize: 13 }}>No vouchers yet.</div>
+                <div style={{ color: "#94a3b8", fontSize: 12, marginTop: 4 }}>
+                  Create your first voucher above.
+                </div>
+              </div>
+            ) : (
+              <div>
+                {recentVouchers.map((v: any, idx: number) => (
+                  <div key={v.id} style={{
+                    display: "flex", alignItems: "center", justifyContent: "space-between",
+                    padding: "12px 20px",
+                    borderBottom: idx < recentVouchers.length - 1 ? "1px solid #f0f4ff" : "none",
+                    background: idx % 2 === 0 ? "#fff" : "#f8faff",
+                  }}>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "#0a2540" }}>
+                        {v.employee}
+                      </div>
+                      <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>
+                        #{v.id} &nbsp;·&nbsp; {v.date || new Date(v.createdAt).toLocaleDateString()}
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <span style={{ fontFamily: "monospace", fontWeight: 700, color: "#0052cc", fontSize: 13 }}>
+                        GH¢ {v.totalAmount?.toFixed(2) || "0.00"}
+                      </span>
+                      <Link href={`/travel-voucher/${v.id}`} style={{
+                        background: "#0052cc", color: "#fff",
+                        padding: "4px 12px", borderRadius: 6,
+                        fontSize: 11, fontWeight: 600, textDecoration: "none",
+                      }}>
+                        View
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
-          {recentVouchers.length === 0 ? (
-            <div style={{ padding: "48px 24px", textAlign: "center" }}>
-              <div style={{ fontSize: 36, marginBottom: 12 }}>📄</div>
-              <div style={{ color: "#6b7a99", fontSize: 14 }}>No vouchers yet.</div>
-              <div style={{ color: "#a0aec0", fontSize: 13, marginTop: 4 }}>
-                Create your first Travel Expense Voucher above.
+          {/* Recent Summary Claims */}
+          <div style={{
+            background: "#fff", borderRadius: 12,
+            border: "1px solid #dce7ff",
+            boxShadow: "0 2px 8px rgba(0,82,204,0.06)",
+            overflow: "hidden",
+          }}>
+            <div style={{
+              background: "linear-gradient(90deg, #1a6bff, #4a90e2)",
+              padding: "14px 20px",
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+            }}>
+              <div style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>Recent Summaries</div>
+              <div style={{ fontSize: 11, color: "#c0d6ff" }}>Last 5</div>
+            </div>
+
+            {recentSummaries.length === 0 ? (
+              <div style={{ padding: "36px 20px", textAlign: "center" }}>
+                <div style={{ fontSize: 32, marginBottom: 10 }}>📊</div>
+                <div style={{ color: "#64748b", fontSize: 13 }}>No summaries yet.</div>
+                <div style={{ color: "#94a3b8", fontSize: 12, marginTop: 4 }}>
+                  Create your first summary above.
+                </div>
               </div>
-            </div>
-          ) : (
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-                <thead>
-                  <tr style={{ background: "#f0f4f8", borderBottom: "2px solid #dce6f7" }}>
-                    {["ID", "Employee", "Date", "Total (GH¢)", "Action"].map((h) => (
-                      <th key={h} style={{
-                        padding: "10px 16px",
-                        textAlign: "left",
-                        fontSize: 11,
-                        fontWeight: 700,
-                        color: "#5a7abf",
-                        letterSpacing: 1,
-                        textTransform: "uppercase",
-                      }}>
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {recentVouchers.map((voucher: any, idx: number) => (
-                    <tr key={voucher.id} style={{
-                      borderBottom: "1px solid #eef2fb",
-                      background: idx % 2 === 0 ? "#fff" : "#f8faff",
+            ) : (
+              <div>
+                {recentSummaries.map((s: any, idx: number) => (
+                  <div key={s.id} style={{
+                    display: "flex", alignItems: "center", justifyContent: "space-between",
+                    padding: "12px 20px",
+                    borderBottom: idx < recentSummaries.length - 1 ? "1px solid #f0f4ff" : "none",
+                    background: idx % 2 === 0 ? "#fff" : "#f8faff",
+                  }}>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "#0a2540" }}>
+                        {s.district}
+                      </div>
+                      <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>
+                        #{s.id} &nbsp;·&nbsp; {s.month}
+                      </div>
+                    </div>
+                    <Link href={`/summary-claims/${s.id}`} style={{
+                      background: "#1a6bff", color: "#fff",
+                      padding: "4px 12px", borderRadius: 6,
+                      fontSize: 11, fontWeight: 600, textDecoration: "none",
                     }}>
-                      <td style={{ padding: "12px 16px", color: "#003d99", fontWeight: 700 }}>
-                        #{voucher.id}
-                      </td>
-                      <td style={{ padding: "12px 16px", color: "#1a2744", fontWeight: 500 }}>
-                        {voucher.employee}
-                      </td>
-                      <td style={{ padding: "12px 16px", color: "#6b7a99" }}>
-                        {voucher.date || voucher.createdAt.toLocaleDateString()}
-                      </td>
-                      <td style={{ padding: "12px 16px", fontFamily: "monospace", fontWeight: 700, color: "#003d99" }}>
-                        GH¢ {voucher.totalAmount?.toFixed(2) || "0.00"}
-                      </td>
-                      <td style={{ padding: "12px 16px" }}>
-                        <Link href={`/travel-voucher/${voucher.id}`} style={{
-                          background: "#003d99",
-                          color: "#fff",
-                          padding: "5px 14px",
-                          borderRadius: 6,
-                          fontSize: 12,
-                          fontWeight: 600,
-                          textDecoration: "none",
-                          display: "inline-block",
-                        }}>
-                          View & Print
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                      View
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
         </div>
       </main>
 
       {/* ── Footer ── */}
-      <footer style={{ background: "#003d99", marginTop: 48 }}>
+      <footer style={{ background: "#0052cc", marginTop: 48 }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", padding: "20px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-          <div style={{ color: "#a8c4ff", fontSize: 12 }}>
+          <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}>
             © {new Date().getFullYear()} Ghana Water Limited – Ashanti South Region
           </div>
-          <div style={{ color: "#5a7abf", fontSize: 12 }}>
+          <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>
             Travel Expense Management System &nbsp;·&nbsp; Internal Use Only
           </div>
         </div>
