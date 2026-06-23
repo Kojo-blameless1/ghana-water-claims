@@ -1,19 +1,30 @@
-import { NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import prisma from "@/lib/prisma";
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json()
+    const data = await request.json();
 
-    const hotelActual = (data.hotelNights || 0) * (data.hotelPerNight || 0)
-    const vehicleTotal = (data.privateVehicleMiles || 0) * (data.privateVehicleRate || 0)
+    // Get the logged-in user
+    const session = await getServerSession();
+    let userId: number | null = null;
+
+    if (session) {
+      const staffNo = (session.user as any)?.staffNo || session.user?.email || "";
+      const user = await prisma.user.findUnique({ where: { staffNo } });
+      userId = user?.id || null;
+    }
+
+    const hotelActual = (data.hotelNights || 0) * (data.hotelPerNight || 0);
+    const vehicleTotal = (data.privateVehicleMiles || 0) * (data.privateVehicleRate || 0);
     const total =
       hotelActual +
       (data.byAir || 0) +
       (data.byRail || 0) +
       vehicleTotal +
       (data.tolls || 0) +
-      (data.miscellaneous || 0)
+      (data.miscellaneous || 0);
 
     const voucher = await prisma.travelVoucher.create({
       data: {
@@ -36,11 +47,12 @@ export async function POST(request: Request) {
         accountCode: data.accountCode,
         date: data.date,
         itineraryEntries: JSON.stringify(data.itineraryEntries || []),
+        userId,
       },
-    })
+    });
 
-    return NextResponse.json({ id: voucher.id })
+    return NextResponse.json({ id: voucher.id });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

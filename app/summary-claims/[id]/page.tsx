@@ -13,8 +13,7 @@ type StaffRow = {
   dayTripApproved: number;
   riskProposed: number;
   riskApproved: number;
-  overtimeCatA: number;
-  overtimeCatC: number;
+  overtimeCategory: "A" | "C" | "";
   overtimeHrs: number;
   overtimeApproved: number;
 };
@@ -62,38 +61,22 @@ export default function ViewSummaryClaim() {
   ];
 
   const th = (extra: React.CSSProperties = {}): React.CSSProperties => ({
-    border: "1px solid #000",
-    padding: "3px 4px",
-    textAlign: "center",
-    fontWeight: "bold",
-    background: "#e8e8e8",
-    fontSize: 8,
-    verticalAlign: "middle",
-    ...extra,
+    border: "1px solid #000", padding: "3px 4px", textAlign: "center",
+    fontWeight: "bold", background: "#e8e8e8", fontSize: 8,
+    verticalAlign: "middle", ...extra,
   });
   const td = (extra: React.CSSProperties = {}): React.CSSProperties => ({
-    border: "1px solid #000",
-    padding: "2px 4px",
-    fontSize: 8.5,
-    height: 22,
-    ...extra,
+    border: "1px solid #000", padding: "2px 4px", fontSize: 8.5, height: 22, ...extra,
   });
 
   return (
     <>
       {/* ── Screen toolbar ── */}
-      <div
-        id="gwl-toolbar"
-        style={{
-          background: "#0052cc",
-          padding: "0 24px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          height: 60,
-          boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-        }}
-      >
+      <div id="gwl-toolbar" style={{
+        background: "#0052cc", padding: "0 24px",
+        display: "flex", justifyContent: "space-between", alignItems: "center",
+        height: 60, boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+      }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <img src="/logo.png" alt="GWL" style={{ height: 34, width: 34, objectFit: "contain", borderRadius: 4 }} />
           <div style={{ width: 1, height: 28, background: "rgba(255,255,255,0.25)" }} />
@@ -104,21 +87,13 @@ export default function ViewSummaryClaim() {
         <div style={{ display: "flex", gap: 8 }}>
           <button
             onClick={() => window.history.back()}
-            style={{
-              color: "#fff", border: "1px solid rgba(255,255,255,0.4)",
-              background: "transparent", padding: "6px 14px",
-              borderRadius: 6, cursor: "pointer", fontSize: 13, fontWeight: 500,
-            }}
+            style={{ color: "#fff", border: "1px solid rgba(255,255,255,0.4)", background: "transparent", padding: "6px 14px", borderRadius: 6, cursor: "pointer", fontSize: 13 }}
           >
             ← Back
           </button>
           <button
             onClick={() => window.print()}
-            style={{
-              background: "#fff", color: "#0052cc", fontWeight: 700,
-              padding: "6px 18px", borderRadius: 6, cursor: "pointer",
-              fontSize: 13, border: "none",
-            }}
+            style={{ background: "#fff", color: "#0052cc", fontWeight: 700, padding: "6px 18px", borderRadius: 6, cursor: "pointer", fontSize: 13, border: "none" }}
           >
             🖨 Print Summary
           </button>
@@ -127,25 +102,18 @@ export default function ViewSummaryClaim() {
 
       {/* ── Printable document ── */}
       <div id="gwl-print-page" style={{
-        maxWidth: 1050,
-        margin: "24px auto 48px",
-        padding: "32px 40px",
-        background: "#fff",
-        border: "1px solid #ccc",
+        maxWidth: 1050, margin: "24px auto 48px", padding: "32px 40px",
+        background: "#fff", border: "1px solid #ccc",
         fontFamily: "'Times New Roman', Times, serif",
-        fontSize: 9,
-        color: "#000",
-        boxShadow: "0 2px 12px rgba(0,0,0,0.10)",
+        fontSize: 9, color: "#000", boxShadow: "0 2px 12px rgba(0,0,0,0.10)",
       }}>
 
-        {/* ── Document header with logo ── */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+        {/* Document header */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
           <img src="/logo.png" alt="GWL Logo" style={{ width: 56, height: 56, objectFit: "contain" }} />
           <div style={{ textAlign: "center", flex: 1 }}>
-            <div style={{ fontWeight: "bold", fontSize: 14, letterSpacing: 0.5 }}>
-              GHANA WATER LIMITED
-            </div>
-            <div style={{ fontSize: 11 }}>ASHANTI SOUTH REGION</div>
+            <div style={{ fontWeight: "bold", fontSize: 14, letterSpacing: 0.5 }}>GHANA WATER LIMITED</div>
+            <div style={{ fontSize: 10 }}>ASHANTI SOUTH REGION</div>
             <div style={{ fontWeight: "bold", fontSize: 12, textDecoration: "underline", marginTop: 2 }}>
               SUMMARY OF CLAIMS
             </div>
@@ -184,8 +152,7 @@ export default function ViewSummaryClaim() {
               <th colSpan={2} style={th()}>NIGHT ALLOWANCE</th>
               <th colSpan={2} style={th()}>DAY TRIP ALLOWANCE</th>
               <th colSpan={2} style={th()}>RISK ALLOWANCE</th>
-              <th colSpan={3} style={th()}>OVERTIME HOURS</th>
-              <th rowSpan={2} style={th({ width: "7%" })}>OVERTIME APPROVED (GH¢)</th>
+              <th colSpan={3} style={th()}>OVERTIME</th>
             </tr>
             <tr>
               {[
@@ -197,9 +164,9 @@ export default function ViewSummaryClaim() {
                 "AMOUNT APPROVED BY RCM / UNIT HEAD (GH¢)",
                 "AMOUNT PROPOSED (GH¢)",
                 "AMOUNT APPROVED BY RCM (GH¢)",
-                "CAT. A",
-                "CAT. C",
+                "CATEGORY",
                 "OVERTIME HRS",
+                "OVERTIME APPROVED (GH¢)",
               ].map((label, i) => (
                 <th key={i} style={th({ fontSize: 7, background: "#f0f0f0" })}>{label}</th>
               ))}
@@ -218,8 +185,18 @@ export default function ViewSummaryClaim() {
                 <td style={td({ textAlign: "right", fontFamily: "monospace" })}>{row ? f(row.dayTripApproved) : ""}</td>
                 <td style={td({ textAlign: "right", fontFamily: "monospace" })}>{row ? f(row.riskProposed) : ""}</td>
                 <td style={td({ textAlign: "right", fontFamily: "monospace" })}>{row ? f(row.riskApproved) : ""}</td>
-                <td style={td({ textAlign: "center" })}>{row ? row.overtimeCatA || "" : ""}</td>
-                <td style={td({ textAlign: "center" })}>{row ? row.overtimeCatC || "" : ""}</td>
+                {/* Category — handles new (overtimeCategory) and old (overtimeCatA/overtimeCatB) data */}
+                <td style={td({ textAlign: "center", fontWeight: "bold", fontSize: 9 })}>
+                  {row
+                    ? row.overtimeCategory
+                      ? `Cat ${row.overtimeCategory}`
+                      : (row as any).overtimeCatA
+                      ? "Cat A"
+                      : (row as any).overtimeCatB || (row as any).overtimeCatC
+                      ? "Cat C"
+                      : ""
+                    : ""}
+                </td>
                 <td style={td({ textAlign: "center" })}>{row ? row.overtimeHrs || "" : ""}</td>
                 <td style={td({ textAlign: "right", fontFamily: "monospace" })}>{row ? f(row.overtimeApproved) : ""}</td>
               </tr>
@@ -232,27 +209,19 @@ export default function ViewSummaryClaim() {
           <div>
             <div style={{ fontWeight: "bold", marginBottom: 28 }}>RECOMMENDED FOR APPROVAL:</div>
             <div style={{ marginBottom: 36 }}>
-              <div style={{ borderTop: "1px solid #000", paddingTop: 2, marginTop: 32, textAlign: "center", fontWeight: "bold", fontSize: 9 }}>
-                DDO / DCO
-              </div>
+              <div style={{ borderTop: "1px solid #000", paddingTop: 2, marginTop: 32, textAlign: "center", fontWeight: "bold", fontSize: 9 }}>DDO / DCO</div>
             </div>
             <div>
-              <div style={{ borderTop: "1px solid #000", paddingTop: 2, marginTop: 32, textAlign: "center", fontWeight: "bold", fontSize: 9 }}>
-                DISTRICT/UNIT HEAD
-              </div>
+              <div style={{ borderTop: "1px solid #000", paddingTop: 2, marginTop: 32, textAlign: "center", fontWeight: "bold", fontSize: 9 }}>DISTRICT/UNIT HEAD</div>
             </div>
           </div>
           <div>
             <div style={{ fontWeight: "bold", marginBottom: 28 }}>APPROVED BY:</div>
             <div style={{ marginBottom: 36 }}>
-              <div style={{ borderTop: "1px solid #000", paddingTop: 2, marginTop: 32, textAlign: "center", fontWeight: "bold", fontSize: 9 }}>
-                SECTIONAL HEAD
-              </div>
+              <div style={{ borderTop: "1px solid #000", paddingTop: 2, marginTop: 32, textAlign: "center", fontWeight: "bold", fontSize: 9 }}>SECTIONAL HEAD</div>
             </div>
             <div>
-              <div style={{ borderTop: "1px solid #000", paddingTop: 2, marginTop: 32, textAlign: "center", fontWeight: "bold", fontSize: 9 }}>
-                REGIONAL CHIEF MANAGER
-              </div>
+              <div style={{ borderTop: "1px solid #000", paddingTop: 2, marginTop: 32, textAlign: "center", fontWeight: "bold", fontSize: 9 }}>REGIONAL CHIEF MANAGER</div>
             </div>
           </div>
         </div>

@@ -7,6 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id           Int             @id @default(autoincrement())
+  staffNo      String          @unique
+  name         String
+  username     String          @unique
+  passwordHash String
+  role         String          @default("USER")
+  approved     Boolean         @default(false)
+  createdAt    DateTime        @default(now())
+  vouchers     TravelVoucher[]
+}
+
 model TravelVoucher {
   id                  Int      @id @default(autoincrement())
   employee            String
@@ -27,7 +39,9 @@ model TravelVoucher {
   totalAmount         Float
   accountCode         String?
   date                String?
-  itineraryEntries    String   @default("[]")   // 👈 new
+  itineraryEntries    String   @default("[]")
+  userId              Int?
+  user                User?    @relation(fields: [userId], references: [id])
   createdAt           DateTime @default(now())
 }
 
@@ -39,4 +53,3 @@ model SummaryClaim {
   staffEntries String
   createdAt    DateTime @default(now())
 }
-// Itinerary model removed ✅
