@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import prisma from "@/lib/prisma";
 import { authOptions } from "@/lib/authOptions";
+import prisma from "@/lib/prisma";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -21,7 +21,7 @@ export async function GET() {
 }
 
 export async function PATCH(request: Request) {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);  // ← fix was here
   if (!session || (session.user as any)?.role !== "ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -45,7 +45,3 @@ export async function PATCH(request: Request) {
 
   return NextResponse.json({ error: "Invalid action" }, { status: 400 });
 }
-
-
-
-
