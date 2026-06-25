@@ -1,5 +1,7 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+
+"use client";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -22,43 +24,153 @@ type Summary = {
   createdAt: string;
 };
 
-function ThreeDotMenu({ onPrint, onEdit, onDelete }: { onPrint: () => void; onEdit: () => void; onDelete: () => void }) {
+
+
+function ThreeDotMenu({
+  onPrint,
+  onEdit,
+  onDelete,
+}: {
+  onPrint: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const btnRef = useRef<HTMLButtonElement>(null);
+
+  const handleOpen = () => {
+    if (btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect();
+
+      setPos({
+        top: rect.bottom + 4,
+        left: rect.right - 140,
+      });
+    }
+
+    setOpen((p) => !p);
+  };
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      const target = e.target as HTMLElement;
+
+      if (!target.closest("[data-threedot]")) {
+        setOpen(false);
+      }
     };
+
     document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    };
   }, []);
 
   return (
-    <div ref={ref} style={{ position: "relative", display: "inline-block" }}>
+    <div data-threedot style={{ display: "inline-block" }}>
       <button
-        onClick={() => setOpen((p) => !p)}
-        style={{ background: "#f0f4ff", border: "1px solid #dce7ff", borderRadius: 6, width: 32, height: 32, cursor: "pointer", fontSize: 16, color: "#0052cc", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}
+        ref={btnRef}
+        onClick={handleOpen}
+        style={{
+          background: "#f0f4ff",
+          border: "1px solid #dce7ff",
+          borderRadius: 6,
+          width: 32,
+          height: 32,
+          cursor: "pointer",
+          fontSize: 18,
+          color: "#0052cc",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontWeight: 700,
+        }}
       >
         ⋮
       </button>
+
       {open && (
-        <div style={{ position: "absolute", right: 0, top: 36, background: "#fff", border: "1px solid #dce7ff", borderRadius: 8, boxShadow: "0 4px 16px rgba(0,82,204,0.12)", zIndex: 100, minWidth: 140, overflow: "hidden" }}>
+        <div
+          data-threedot
+          style={{
+            position: "fixed",
+            top: pos.top,
+            left: pos.left,
+            background: "#fff",
+            border: "1px solid #dce7ff",
+            borderRadius: 8,
+            boxShadow: "0 4px 20px rgba(0,82,204,0.15)",
+            zIndex: 9999,
+            minWidth: 140,
+            overflow: "hidden",
+          }}
+        >
           <button
-            onClick={() => { onPrint(); setOpen(false); }}
-            style={{ width: "100%", padding: "10px 16px", textAlign: "left", background: "transparent", border: "none", fontSize: 13, cursor: "pointer", color: "#0a2540", display: "flex", alignItems: "center", gap: 8, borderBottom: "1px solid #f0f4ff" }}
+            onClick={() => {
+              onPrint();
+              setOpen(false);
+            }}
+            style={{
+              width: "100%",
+              padding: "9px 14px",
+              textAlign: "left",
+              background: "transparent",
+              border: "none",
+              borderBottom: "1px solid #f0f4ff",
+              fontSize: 13,
+              cursor: "pointer",
+              color: "#0a2540",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
           >
             🖨 Print
           </button>
+
           <button
-            onClick={() => { onEdit(); setOpen(false); }}
-            style={{ width: "100%", padding: "10px 16px", textAlign: "left", background: "transparent", border: "none", fontSize: 13, cursor: "pointer", color: "#0052cc", display: "flex", alignItems: "center", gap: 8, borderBottom: "1px solid #f0f4ff" }}
+            onClick={() => {
+              onEdit();
+              setOpen(false);
+            }}
+            style={{
+              width: "100%",
+              padding: "9px 14px",
+              textAlign: "left",
+              background: "transparent",
+              border: "none",
+              borderBottom: "1px solid #f0f4ff",
+              fontSize: 13,
+              cursor: "pointer",
+              color: "#0052cc",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
           >
             ✏️ Edit
           </button>
+
           <button
-            onClick={() => { onDelete(); setOpen(false); }}
-            style={{ width: "100%", padding: "10px 16px", textAlign: "left", background: "transparent", border: "none", fontSize: 13, cursor: "pointer", color: "#dc2626", display: "flex", alignItems: "center", gap: 8 }}
+            onClick={() => {
+              onDelete();
+              setOpen(false);
+            }}
+            style={{
+              width: "100%",
+              padding: "9px 14px",
+              textAlign: "left",
+              background: "transparent",
+              border: "none",
+              fontSize: 13,
+              cursor: "pointer",
+              color: "#dc2626",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
           >
             🗑 Delete
           </button>
