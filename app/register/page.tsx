@@ -40,28 +40,34 @@ export default function RegisterPage() {
     }
   };
 
-  const inputStyle: React.CSSProperties = {
-    width: "100%", border: "1.5px solid #dce7ff", borderRadius: 8,
-    padding: "11px 14px", fontSize: 14, outline: "none",
-    background: "#fff", color: "#0a2540", boxSizing: "border-box",
-  };
-  const labelStyle: React.CSSProperties = {
-    display: "block", fontSize: 11, fontWeight: 600,
-    color: "#475569", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em",
-  };
-
   if (success) {
     return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f0f4ff", fontFamily: "'Inter','Segoe UI',sans-serif" }}>
-        <div style={{ background: "#fff", borderRadius: 16, padding: "48px 40px", textAlign: "center", maxWidth: 400, width: "100%", border: "1px solid #dce7ff", boxShadow: "0 4px 24px rgba(0,82,204,0.10)" }}>
-          <div style={{ width: 64, height: 64, borderRadius: "50%", background: "#e8f0ff", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px", fontSize: 28, color: "#0052cc" }}>✓</div>
-          <h2 style={{ fontSize: 20, fontWeight: 700, color: "#0a2540", marginBottom: 8 }}>Registration Submitted</h2>
-          <p style={{ color: "#64748b", fontSize: 14, marginBottom: 28 }}>
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+        <div className="w-full max-w-[400px] rounded-xl border border-slate-200 bg-white px-10 py-12 text-center shadow-sm">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-slate-50 border border-slate-200">
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              className="h-7 w-7 text-blue-900"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 10.5l3.5 3.5L15 6.5" />
+            </svg>
+          </div>
+
+          <h2 className="mb-2 text-xl font-semibold tracking-tight text-slate-900">
+            Registration Submitted
+          </h2>
+
+          <p className="mb-7 text-sm text-slate-600 leading-relaxed">
             Your account is pending admin approval. You will be able to log in once approved.
           </p>
+
           <button
             onClick={() => router.push("/login")}
-            style={{ width: "100%", background: "#0052cc", color: "#fff", border: "none", borderRadius: 8, padding: "11px 0", fontWeight: 700, fontSize: 14, cursor: "pointer" }}
+            className="w-full rounded-lg bg-blue-900 px-0 py-[11px] text-sm font-semibold text-white transition-colors duration-150 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-offset-2"
           >
             Go to Login
           </button>
@@ -71,74 +77,152 @@ export default function RegisterPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f0f4ff", display: "flex", flexDirection: "column", fontFamily: "'Inter','Segoe UI',sans-serif" }}>
-
+    <div className="flex min-h-screen flex-col bg-slate-50">
       {/* Header */}
-      <div style={{ background: "#0052cc", height: 60, display: "flex", alignItems: "center", padding: "0 32px", gap: 16 }}>
-        <img src="/logo.png" alt="GWL" style={{ height: 36, width: 36, objectFit: "contain" }} />
-        <div style={{ width: 1, height: 28, background: "rgba(255,255,255,0.25)" }} />
-        <div style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>Ghana Water Limited</div>
-        <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, marginTop: 2 }}>Ashanti South Region</div>
+      <div className="flex h-[60px] items-center gap-4 bg-blue-900 px-8">
+        <img src="/logo.png" alt="GWL" className="h-9 w-9 object-contain" />
+        <div className="h-7 w-px bg-white/25" />
+        <div className="text-sm font-semibold text-white">Ghana Water Limited</div>
+        <div className="mt-0.5 text-[11px] text-white/60">Ashanti South Region</div>
       </div>
 
-      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
-        <div style={{ background: "#fff", borderRadius: 16, padding: "48px 40px", width: "100%", maxWidth: 460, border: "1px solid #dce7ff", boxShadow: "0 4px 24px rgba(0,82,204,0.10)" }}>
-
-          <div style={{ textAlign: "center", marginBottom: 32 }}>
-            <h1 style={{ fontSize: 20, fontWeight: 800, color: "#0a2540", margin: 0 }}>Create Account</h1>
-            <p style={{ color: "#64748b", fontSize: 13, marginTop: 6 }}>Register with your GWL staff details</p>
+      <div className="flex flex-1 items-center justify-center p-6">
+        <div className="w-full max-w-[460px] rounded-xl border border-slate-200 bg-white px-10 py-12 shadow-sm">
+          <div className="mb-8 text-center">
+            <h1 className="text-xl font-semibold tracking-tight text-slate-900">
+              Create Account
+            </h1>
+            <p className="mt-1.5 text-[13px] text-slate-600">
+              Register with your GWL staff details
+            </p>
           </div>
 
           <form onSubmit={handleSubmit}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
+            <div className="mb-3.5 grid grid-cols-2 gap-3.5">
               <div>
-                <label style={labelStyle}>Staff Number</label>
-                <input value={form.staffNo} onChange={(e) => update("staffNo", e.target.value)} style={inputStyle} placeholder="e.g. GWL-0042" required />
+                <label
+                  htmlFor="staffNo"
+                  className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-slate-600"
+                >
+                  Staff Number
+                </label>
+                <input
+                  id="staffNo"
+                  value={form.staffNo}
+                  onChange={(e) => update("staffNo", e.target.value)}
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-[11px] text-sm text-slate-900 outline-none transition-colors duration-150 placeholder:text-slate-400 focus:border-blue-900 focus:ring-2 focus:ring-blue-900/10"
+                  placeholder="e.g. GWL-0042"
+                  required
+                />
               </div>
               <div>
-                <label style={labelStyle}>Full Name</label>
-                <input value={form.name} onChange={(e) => update("name", e.target.value)} style={inputStyle} placeholder="Your full name" required />
+                <label
+                  htmlFor="name"
+                  className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-slate-600"
+                >
+                  Full Name
+                </label>
+                <input
+                  id="name"
+                  value={form.name}
+                  onChange={(e) => update("name", e.target.value)}
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-[11px] text-sm text-slate-900 outline-none transition-colors duration-150 placeholder:text-slate-400 focus:border-blue-900 focus:ring-2 focus:ring-blue-900/10"
+                  placeholder="Your full name"
+                  required
+                />
               </div>
             </div>
-            <div style={{ marginBottom: 14 }}>
-              <label style={labelStyle}>Username</label>
-              <input value={form.username} onChange={(e) => update("username", e.target.value)} style={inputStyle} placeholder="Choose a username" required />
+
+            <div className="mb-3.5">
+              <label
+                htmlFor="username"
+                className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-slate-600"
+              >
+                Username
+              </label>
+              <input
+                id="username"
+                value={form.username}
+                onChange={(e) => update("username", e.target.value)}
+                className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-[11px] text-sm text-slate-900 outline-none transition-colors duration-150 placeholder:text-slate-400 focus:border-blue-900 focus:ring-2 focus:ring-blue-900/10"
+                placeholder="Choose a username"
+                required
+              />
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 24 }}>
+
+            <div className="mb-6 grid grid-cols-2 gap-3.5">
               <div>
-                <label style={labelStyle}>Password</label>
-                <input type="password" value={form.password} onChange={(e) => update("password", e.target.value)} style={inputStyle} placeholder="Min. 6 characters" required />
+                <label
+                  htmlFor="password"
+                  className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-slate-600"
+                >
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  value={form.password}
+                  onChange={(e) => update("password", e.target.value)}
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-[11px] text-sm text-slate-900 outline-none transition-colors duration-150 placeholder:text-slate-400 focus:border-blue-900 focus:ring-2 focus:ring-blue-900/10"
+                  placeholder="Min. 6 characters"
+                  required
+                />
               </div>
               <div>
-                <label style={labelStyle}>Confirm Password</label>
-                <input type="password" value={form.confirm} onChange={(e) => update("confirm", e.target.value)} style={inputStyle} placeholder="Repeat password" required />
+                <label
+                  htmlFor="confirm"
+                  className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-slate-600"
+                >
+                  Confirm Password
+                </label>
+                <input
+                  id="confirm"
+                  type="password"
+                  value={form.confirm}
+                  onChange={(e) => update("confirm", e.target.value)}
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-[11px] text-sm text-slate-900 outline-none transition-colors duration-150 placeholder:text-slate-400 focus:border-blue-900 focus:ring-2 focus:ring-blue-900/10"
+                  placeholder="Repeat password"
+                  required
+                />
               </div>
             </div>
 
             {error && (
-              <div style={{ background: "#fef2f2", border: "1.5px solid #fca5a5", borderRadius: 8, padding: "10px 14px", color: "#dc2626", fontSize: 13, marginBottom: 16 }}>
-                ⚠ {error}
+              <div
+                role="alert"
+                className="mb-4 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3.5 py-2.5 text-[13px] text-red-600"
+              >
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="mt-0.5 h-4 w-4 flex-shrink-0"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M8.257 3.099c.765-1.36 2.72-1.36 3.486 0l6.28 11.18c.75 1.334-.213 2.987-1.743 2.987H3.72c-1.53 0-2.493-1.653-1.743-2.987l6.28-11.18zM10 7a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 7zm0 8a1 1 0 100-2 1 1 0 000 2z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <span>{error}</span>
               </div>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              style={{
-                width: "100%", background: loading ? "#7aa7e0" : "#0052cc",
-                color: "#fff", border: "none", borderRadius: 8,
-                padding: "12px 0", fontWeight: 700, fontSize: 15,
-                cursor: loading ? "not-allowed" : "pointer",
-                boxShadow: "0 4px 14px rgba(0,82,204,0.3)",
-              }}
+              className="w-full rounded-lg bg-blue-900 py-3 text-[15px] font-semibold text-white shadow-sm transition-colors duration-150 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
             >
               {loading ? "Submitting…" : "Register"}
             </button>
           </form>
 
-          <p style={{ textAlign: "center", fontSize: 13, color: "#64748b", marginTop: 20 }}>
+          <p className="mt-5 text-center text-[13px] text-slate-600">
             Already have an account?{" "}
-            <Link href="/login" style={{ color: "#0052cc", fontWeight: 600, textDecoration: "none" }}>
+            <Link
+              href="/login"
+              className="font-semibold text-blue-900 underline-offset-4 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-900/20"
+            >
               Sign in
             </Link>
           </p>

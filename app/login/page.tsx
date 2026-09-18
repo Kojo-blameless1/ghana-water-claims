@@ -1,11 +1,16 @@
 "use client";
+
 import { useState } from "react";
+
 import { signIn } from "next-auth/react";
+
 import { useRouter } from "next/navigation";
+
 import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
+
   const [staffNo, setStaffNo] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -13,6 +18,7 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
     setLoading(true);
     setError(null);
 
@@ -36,6 +42,7 @@ export default function LoginPage() {
     // Redirect based on role — fetch session to check
     const sessionRes = await fetch("/api/auth/session");
     const session = await sessionRes.json();
+
     if (session?.user?.role === "ADMIN") {
       router.push("/admin");
     } else {
@@ -43,92 +50,149 @@ export default function LoginPage() {
     }
   };
 
-  const inputStyle: React.CSSProperties = {
-    width: "100%", border: "1.5px solid #dce7ff", borderRadius: 8,
-    padding: "11px 14px", fontSize: 14, outline: "none",
-    background: "#fff", color: "#0a2540", boxSizing: "border-box",
-  };
-  const labelStyle: React.CSSProperties = {
-    display: "block", fontSize: 11, fontWeight: 600,
-    color: "#475569", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em",
-  };
-
   return (
-    <div style={{ minHeight: "100vh", background: "#f0f4ff", display: "flex", flexDirection: "column", fontFamily: "'Inter','Segoe UI',sans-serif" }}>
-
+    <div className="min-h-screen bg-slate-50 text-slate-900">
       {/* Header */}
-      <div style={{ background: "#0052cc", height: 60, display: "flex", alignItems: "center", padding: "0 32px", gap: 16 }}>
-        <img src="/logo.png" alt="GWL" style={{ height: 36, width: 36, objectFit: "contain" }} />
-        <div style={{ width: 1, height: 28, background: "rgba(255,255,255,0.25)" }} />
-        <div style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>Ghana Water Limited</div>
-        <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, marginTop: 2 }}>Ashanti South Region</div>
-      </div>
+      <header className="border-b border-slate-200 bg-white">
+        <div className="mx-auto flex h-[68px] w-full max-w-7xl items-center px-5 sm:px-8">
+          <div className="flex items-center gap-3">
+            <img
+              src="/logo.png"
+              alt="GWL"
+              className="h-10 w-10 object-contain"
+            />
 
-      {/* Form */}
-      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
-        <div style={{ background: "#fff", borderRadius: 16, padding: "48px 40px", width: "100%", maxWidth: 420, border: "1px solid #dce7ff", boxShadow: "0 4px 24px rgba(0,82,204,0.10)" }}>
+            <div className="h-8 w-px bg-slate-200" />
 
-          {/* Logo */}
-          <div style={{ textAlign: "center", marginBottom: 32 }}>
-            <div style={{ width: 64, height: 64, borderRadius: "50%", background: "#e8f0ff", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
-              <img src="/logo.png" alt="GWL" style={{ width: 40, height: 40, objectFit: "contain" }} />
+            <div>
+              <div className="text-sm font-semibold tracking-tight text-slate-900">
+                Ghana Water Limited
+              </div>
+              <div className="mt-0.5 text-[11px] text-slate-500">
+                Ashanti South Region
+              </div>
             </div>
-            <h1 style={{ fontSize: 20, fontWeight: 800, color: "#0a2540", margin: 0 }}>Welcome Back</h1>
-            <p style={{ color: "#64748b", fontSize: 13, marginTop: 6 }}>Sign in with your staff credentials</p>
+          </div>
+        </div>
+      </header>
+
+      {/* Main */}
+      <main className="flex min-h-[calc(100vh-68px)] items-center justify-center px-4 py-10 sm:px-6">
+        <div className="w-full max-w-[430px]">
+          {/* Login Card */}
+          <div className="rounded-xl border border-slate-200 bg-white px-6 py-8 shadow-sm sm:px-10 sm:py-10">
+            {/* Logo */}
+            <div className="mb-8 text-center">
+              <div className="mx-auto mb-5 flex h-[68px] w-[68px] items-center justify-center rounded-full border border-slate-200 bg-slate-50">
+                <img
+                  src="/logo.png"
+                  alt="GWL"
+                  className="h-11 w-11 object-contain"
+                />
+              </div>
+
+              <h1 className="text-[22px] font-semibold tracking-tight text-slate-900">
+                Welcome Back
+              </h1>
+
+              <p className="mt-2 text-sm text-slate-600">
+                Sign in with your staff credentials
+              </p>
+            </div>
+
+            <form onSubmit={handleLogin}>
+              <div className="mb-5">
+                <label
+                  htmlFor="staffNo"
+                  className="mb-[7px] block text-[11px] font-semibold uppercase tracking-wider text-slate-600"
+                >
+                  Staff Number
+                </label>
+
+                <input
+                  id="staffNo"
+                  value={staffNo}
+                  onChange={(e) => setStaffNo(e.target.value)}
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-3 text-sm text-slate-900 outline-none transition-colors duration-150 placeholder:text-slate-400 focus:border-blue-900 focus:ring-2 focus:ring-blue-900/10"
+                  placeholder="e.g. GWL-0042"
+                  required
+                />
+              </div>
+
+              <div className="mb-6">
+                <label
+                  htmlFor="password"
+                  className="mb-[7px] block text-[11px] font-semibold uppercase tracking-wider text-slate-600"
+                >
+                  Password
+                </label>
+
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-3 text-sm text-slate-900 outline-none transition-colors duration-150 placeholder:text-slate-400 focus:border-blue-900 focus:ring-2 focus:ring-blue-900/10"
+                  placeholder="Your password"
+                  required
+                />
+              </div>
+
+              {error && (
+                <div
+                  role="alert"
+                  className="mb-5 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3.5 py-3 text-[13px] text-red-600"
+                >
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    className="mt-0.5 h-4 w-4 flex-shrink-0"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M8.257 3.099c.765-1.36 2.72-1.36 3.486 0l6.28 11.18c.75 1.334-.213 2.987-1.743 2.987H3.72c-1.53 0-2.493-1.653-1.743-2.987l6.28-11.18zM10 7a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 7zm0 8a1 1 0 100-2 1 1 0 000 2z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span>{error}</span>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex w-full items-center justify-center rounded-lg bg-blue-900 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-colors duration-150 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
+              >
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                    Signing in…
+                  </span>
+                ) : (
+                  "Sign In"
+                )}
+              </button>
+            </form>
+
+            <div className="my-7 h-px bg-slate-100" />
+
+            <p className="text-center text-sm text-slate-600">
+              Don't have an account?{" "}
+              <Link
+                href="/register"
+                className="font-semibold text-blue-900 underline-offset-4 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-900/20"
+              >
+                Register here
+              </Link>
+            </p>
           </div>
 
-          <form onSubmit={handleLogin}>
-            <div style={{ marginBottom: 16 }}>
-              <label style={labelStyle}>Staff Number</label>
-              <input
-                value={staffNo}
-                onChange={(e) => setStaffNo(e.target.value)}
-                style={inputStyle}
-                placeholder="e.g. GWL-0042"
-                required
-              />
-            </div>
-            <div style={{ marginBottom: 24 }}>
-              <label style={labelStyle}>Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                style={inputStyle}
-                placeholder="Your password"
-                required
-              />
-            </div>
-
-            {error && (
-              <div style={{ background: "#fef2f2", border: "1.5px solid #fca5a5", borderRadius: 8, padding: "10px 14px", color: "#dc2626", fontSize: 13, marginBottom: 16 }}>
-                ⚠ {error}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              style={{
-                width: "100%", background: loading ? "#7aa7e0" : "#0052cc",
-                color: "#fff", border: "none", borderRadius: 8,
-                padding: "12px 0", fontWeight: 700, fontSize: 15,
-                cursor: loading ? "not-allowed" : "pointer",
-                boxShadow: "0 4px 14px rgba(0,82,204,0.3)",
-              }}
-            >
-              {loading ? "Signing in…" : "Sign In"}
-            </button>
-          </form>
-
-          <p style={{ textAlign: "center", fontSize: 13, color: "#64748b", marginTop: 20 }}>
-            Don't have an account?{" "}
-            <Link href="/register" style={{ color: "#0052cc", fontWeight: 600, textDecoration: "none" }}>
-              Register here
-            </Link>
+          <p className="mt-6 text-center text-[11px] text-slate-400">
+            Ghana Water Limited • Ashanti South Region
           </p>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

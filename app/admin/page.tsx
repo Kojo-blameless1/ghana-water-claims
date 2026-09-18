@@ -1,6 +1,5 @@
 "use client";
 
-"use client";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
@@ -24,7 +23,79 @@ type Summary = {
   createdAt: string;
 };
 
+/* Presentational icon set — inline SVG, no new dependency required.
+   Swap for lucide-react equivalents if that package is already installed. */
+function IconPrinter({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <path d="M6 9V3h12v6M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v7H6v-7z" />
+    </svg>
+  );
+}
 
+function IconEdit({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+      <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+    </svg>
+  );
+}
+
+function IconTrash({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z" />
+    </svg>
+  );
+}
+
+function IconUsers({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+    </svg>
+  );
+}
+
+function IconChart({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <path d="M3 3v18h18" />
+      <rect x="7" y="12" width="3" height="6" />
+      <rect x="12" y="8" width="3" height="10" />
+      <rect x="17" y="5" width="3" height="13" />
+    </svg>
+  );
+}
+
+function IconCalendar({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <rect x="3" y="4" width="18" height="18" rx="2" />
+      <path d="M16 2v4M8 2v4M3 10h18" />
+    </svg>
+  );
+}
+
+function IconDocument({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+      <path d="M14 2v6h6" />
+    </svg>
+  );
+}
+
+function IconClose({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <path d="M18 6L6 18M6 6l12 12" />
+    </svg>
+  );
+}
 
 function ThreeDotMenu({
   onPrint,
@@ -69,24 +140,12 @@ function ThreeDotMenu({
   }, []);
 
   return (
-    <div data-threedot style={{ display: "inline-block" }}>
+    <div data-threedot className="inline-block">
       <button
         ref={btnRef}
         onClick={handleOpen}
-        style={{
-          background: "#f0f4ff",
-          border: "1px solid #dce7ff",
-          borderRadius: 6,
-          width: 32,
-          height: 32,
-          cursor: "pointer",
-          fontSize: 18,
-          color: "#0052cc",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontWeight: 700,
-        }}
+        aria-label="Row actions"
+        className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-lg font-bold text-slate-600 shadow-sm transition-colors duration-150 hover:border-slate-300 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-offset-2"
       >
         ⋮
       </button>
@@ -94,17 +153,10 @@ function ThreeDotMenu({
       {open && (
         <div
           data-threedot
+          className="fixed z-[9999] min-w-[150px] overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-xl shadow-slate-900/10"
           style={{
-            position: "fixed",
             top: pos.top,
             left: pos.left,
-            background: "#fff",
-            border: "1px solid #dce7ff",
-            borderRadius: 8,
-            boxShadow: "0 4px 20px rgba(0,82,204,0.15)",
-            zIndex: 9999,
-            minWidth: 140,
-            overflow: "hidden",
           }}
         >
           <button
@@ -112,22 +164,10 @@ function ThreeDotMenu({
               onPrint();
               setOpen(false);
             }}
-            style={{
-              width: "100%",
-              padding: "9px 14px",
-              textAlign: "left",
-              background: "transparent",
-              border: "none",
-              borderBottom: "1px solid #f0f4ff",
-              fontSize: 13,
-              cursor: "pointer",
-              color: "#0a2540",
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-            }}
+            className="flex w-full items-center gap-3 border-b border-slate-100 bg-transparent px-4 py-3 text-left text-sm font-medium text-slate-700 transition-colors duration-150 hover:bg-slate-50 focus:bg-slate-50 focus:outline-none"
           >
-            🖨 Print
+            <IconPrinter className="h-4 w-4 text-slate-500" />
+            Print
           </button>
 
           <button
@@ -135,22 +175,10 @@ function ThreeDotMenu({
               onEdit();
               setOpen(false);
             }}
-            style={{
-              width: "100%",
-              padding: "9px 14px",
-              textAlign: "left",
-              background: "transparent",
-              border: "none",
-              borderBottom: "1px solid #f0f4ff",
-              fontSize: 13,
-              cursor: "pointer",
-              color: "#0052cc",
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-            }}
+            className="flex w-full items-center gap-3 border-b border-slate-100 bg-transparent px-4 py-3 text-left text-sm font-medium text-blue-900 transition-colors duration-150 hover:bg-slate-50 focus:bg-slate-50 focus:outline-none"
           >
-            ✏️ Edit
+            <IconEdit className="h-4 w-4" />
+            Edit
           </button>
 
           <button
@@ -158,21 +186,10 @@ function ThreeDotMenu({
               onDelete();
               setOpen(false);
             }}
-            style={{
-              width: "100%",
-              padding: "9px 14px",
-              textAlign: "left",
-              background: "transparent",
-              border: "none",
-              fontSize: 13,
-              cursor: "pointer",
-              color: "#dc2626",
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-            }}
+            className="flex w-full items-center gap-3 bg-transparent px-4 py-3 text-left text-sm font-medium text-red-600 transition-colors duration-150 hover:bg-red-50 focus:bg-red-50 focus:outline-none"
           >
-            🗑 Delete
+            <IconTrash className="h-4 w-4" />
+            Delete
           </button>
         </div>
       )}
@@ -187,7 +204,10 @@ export default function AdminDashboard() {
   const [summaries, setSummaries] = useState<Summary[]>([]);
   const [filterMonth, setFilterMonth] = useState("");
   const [loading, setLoading] = useState(true);
-  const [deleteConfirm, setDeleteConfirm] = useState<{ type: "voucher" | "summary"; id: number } | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    type: "voucher" | "summary";
+    id: number;
+  } | null>(null);
 
   useEffect(() => {
     if (status === "unauthenticated") router.push("/login");
@@ -202,6 +222,7 @@ export default function AdminDashboard() {
       fetch("/api/travel-voucher/all"),
       fetch("/api/summary-claim/all"),
     ]);
+
     const [vData, sData] = await Promise.all([vRes.json(), sRes.json()]);
     setVouchers(Array.isArray(vData) ? vData : []);
     setSummaries(Array.isArray(sData) ? sData : []);
@@ -210,9 +231,10 @@ export default function AdminDashboard() {
 
   const handleDelete = async () => {
     if (!deleteConfirm) return;
-    const url = deleteConfirm.type === "voucher"
-      ? `/api/travel-voucher/${deleteConfirm.id}`
-      : `/api/summary-claim/${deleteConfirm.id}`;
+    const url =
+      deleteConfirm.type === "voucher"
+        ? `/api/travel-voucher/${deleteConfirm.id}`
+        : `/api/summary-claim/${deleteConfirm.id}`;
 
     await fetch(url, { method: "DELETE" });
     setDeleteConfirm(null);
@@ -220,44 +242,81 @@ export default function AdminDashboard() {
   };
 
   const filteredVouchers = filterMonth
-    ? vouchers.filter((v) => v.allowanceMonth?.toLowerCase().includes(filterMonth.toLowerCase()))
+    ? vouchers.filter((v) =>
+        v.allowanceMonth?.toLowerCase().includes(filterMonth.toLowerCase())
+      )
     : vouchers;
 
   if (status === "loading" || loading)
     return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f0f4ff", fontFamily: "'Inter','Segoe UI',sans-serif" }}>
-        <div style={{ color: "#0052cc", fontWeight: 600 }}>Loading…</div>
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-9 w-9 animate-spin rounded-full border-4 border-slate-200 border-t-blue-900" />
+          <div className="text-sm font-semibold text-slate-600">Loading…</div>
+        </div>
       </div>
     );
 
   const user = session?.user as any;
 
+  // NOTE: sectionCard / tableHeader below are unused in the JSX (dead code
+  // carried over from the original file) — flagging rather than removing,
+  // per your instruction not to delete code that looks unused.
   const sectionCard: React.CSSProperties = {
-    background: "#fff", borderRadius: 12, border: "1px solid #dce7ff",
-    boxShadow: "0 2px 8px rgba(0,82,204,0.06)", overflow: "hidden", marginBottom: 28,
+    background: "#fff",
+    borderRadius: 12,
+    border: "1px solid #e2e2df",
+    boxShadow: "0 2px 8px rgba(15,23,42,0.04)",
+    overflow: "hidden",
+    marginBottom: 28,
   };
+
   const tableHeader: React.CSSProperties = {
-    padding: "10px 16px", textAlign: "left", fontSize: 11,
-    fontWeight: 700, color: "#0052cc", letterSpacing: 1, textTransform: "uppercase",
+    padding: "10px 16px",
+    textAlign: "left",
+    fontSize: 11,
+    fontWeight: 700,
+    color: "#315f9f",
+    letterSpacing: 1,
+    textTransform: "uppercase",
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f0f4ff", fontFamily: "'Inter','Segoe UI',sans-serif" }}>
-
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
       {/* Delete Confirmation Modal */}
       {deleteConfirm && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: "36px 32px", maxWidth: 380, width: "100%", textAlign: "center", boxShadow: "0 8px 32px rgba(0,0,0,0.15)" }}>
-            <div style={{ fontSize: 36, marginBottom: 12 }}>🗑</div>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: "#0a2540", marginBottom: 8 }}>Confirm Delete</h2>
-            <p style={{ color: "#64748b", fontSize: 14, marginBottom: 24 }}>
-              Are you sure you want to delete this {deleteConfirm.type === "voucher" ? "travel voucher" : "summary of claims"}? This cannot be undone.
-            </p>
-            <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={() => setDeleteConfirm(null)} style={{ flex: 1, background: "transparent", color: "#0052cc", border: "1.5px solid #0052cc", borderRadius: 8, padding: "10px 0", fontWeight: 600, fontSize: 14, cursor: "pointer" }}>
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/50 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-2xl sm:p-8">
+            <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
+              <IconTrash className="h-6 w-6 text-red-600" />
+            </div>
+
+            <div className="text-center">
+              <h2 className="mb-2 text-xl font-semibold tracking-tight text-slate-900">
+                Confirm Delete
+              </h2>
+
+              <p className="mb-7 text-sm leading-relaxed text-slate-600">
+                Are you sure you want to delete this{" "}
+                {deleteConfirm.type === "voucher"
+                  ? "travel voucher"
+                  : "summary of claims"}
+                ? This cannot be undone.
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                className="flex-1 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition-colors duration-150 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-offset-2"
+              >
                 Cancel
               </button>
-              <button onClick={handleDelete} style={{ flex: 1, background: "#dc2626", color: "#fff", border: "none", borderRadius: 8, padding: "10px 0", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
+
+              <button
+                onClick={handleDelete}
+                className="flex-1 rounded-lg bg-red-600 px-4 py-3 text-sm font-semibold text-white transition-colors duration-150 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2"
+              >
                 Delete
               </button>
             </div>
@@ -266,105 +325,241 @@ export default function AdminDashboard() {
       )}
 
       {/* Nav bar */}
-      <div style={{ background: "#0052cc", padding: "0 32px", display: "flex", alignItems: "center", gap: 16, height: 60, boxShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>
-        <img src="/logo.png" alt="GWL" style={{ height: 36, width: 36, objectFit: "contain", borderRadius: 4 }} />
-        <div style={{ width: 1, height: 28, background: "rgba(255,255,255,0.25)" }} />
-        <div>
-          <div style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>Ghana Water Limited</div>
-          <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>Ashanti South Region — Admin</div>
-        </div>
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 12 }}>
-          <Link href="/admin/users" style={{ background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 6, padding: "6px 14px", fontSize: 12, fontWeight: 600, textDecoration: "none" }}>
-            👥 Manage Users
-          </Link>
-          <Link href="/summary-claims/new" style={{ background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 6, padding: "6px 14px", fontSize: 12, fontWeight: 600, textDecoration: "none" }}>
-            📊 New Summary
-          </Link>
-          <div style={{ textAlign: "right" }}>
-            <div style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>{user?.name}</div>
-            <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 11 }}>Administrator</div>
+      <div className="border-b border-slate-200 bg-white">
+        <div className="mx-auto flex min-h-[68px] max-w-[1400px] items-center gap-3 px-4 sm:gap-4 sm:px-6 lg:px-8">
+          <img
+            src="/logo.png"
+            alt="GWL"
+            className="h-10 w-10 rounded-lg object-contain"
+          />
+
+          <div className="hidden h-8 w-px bg-slate-200 sm:block" />
+
+          <div className="min-w-0">
+            <div className="truncate text-sm font-semibold text-slate-900 sm:text-base">
+              Ghana Water Limited
+            </div>
+            <div className="truncate text-[10px] font-medium text-slate-500 sm:text-xs">
+              Ashanti South Region — Admin
+            </div>
           </div>
-          <button onClick={() => signOut({ callbackUrl: "/login" })} style={{ background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 6, padding: "6px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
-            Sign Out
-          </button>
+
+          <div className="ml-auto flex items-center gap-2 sm:gap-3">
+            <Link
+              href="/admin/users"
+              className="hidden items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition-colors duration-150 hover:border-slate-300 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-900 sm:flex"
+            >
+              <IconUsers className="h-4 w-4" />
+              Manage Users
+            </Link>
+
+            <Link
+              href="/summary-claims/new"
+              className="hidden items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition-colors duration-150 hover:border-slate-300 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-900 md:flex"
+            >
+              <IconChart className="h-4 w-4" />
+              New Summary
+            </Link>
+
+            <div className="hidden text-right lg:block">
+              <div className="text-sm font-semibold text-slate-800">
+                {user?.name}
+              </div>
+              <div className="text-[11px] text-slate-500">Administrator</div>
+            </div>
+
+            <button
+              onClick={() => signOut({ callbackUrl: "/login" })}
+              className="rounded-lg bg-slate-800 px-3 py-2 text-xs font-semibold text-white transition-colors duration-150 hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-offset-2 sm:px-4"
+            >
+              Sign Out
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Hero */}
-      <div style={{ background: "linear-gradient(135deg, #003d99 0%, #0052cc 55%, #1a6bff 100%)", padding: "36px 32px", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", top: -40, right: -40, width: 200, height: 200, borderRadius: "50%", background: "rgba(255,255,255,0.05)" }} />
-        <div style={{ position: "relative", zIndex: 1 }}>
-          <div style={{ fontSize: 11, color: "#a8c4ff", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>Admin Dashboard</div>
-          <h1 style={{ fontSize: 26, fontWeight: 800, color: "#fff", margin: "0 0 8px" }}>Claims Overview</h1>
-          <p style={{ color: "#c0d6ff", fontSize: 13, margin: 0 }}>View, filter, edit, and print all travel vouchers and summary of claims.</p>
+      <div className="border-b border-slate-200 bg-white">
+        <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+          <div className="max-w-2xl">
+            <div className="mb-3 inline-flex rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-amber-700">
+              Admin Dashboard
+            </div>
+
+            <h1 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+              Claims Overview
+            </h1>
+
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-slate-600 sm:text-base">
+              View, filter, edit, and print all travel vouchers and summary of
+              claims.
+            </p>
+          </div>
         </div>
       </div>
 
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "32px 24px 60px" }}>
-
+      <div className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         {/* Stats */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 32 }}>
+        <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
           {[
-            { label: "Total Vouchers", value: vouchers.length, icon: "✈️" },
-            { label: "Total Summaries", value: summaries.length, icon: "📊" },
-            { label: "This Month", value: vouchers.filter(v => v.allowanceMonth?.includes(new Date().toLocaleString("default", { month: "long" }))).length, icon: "📅" },
+            {
+              label: "Total Vouchers",
+              value: vouchers.length,
+              icon: <IconDocument className="h-5 w-5 text-blue-900" />,
+            },
+            {
+              label: "Total Summaries",
+              value: summaries.length,
+              icon: <IconChart className="h-5 w-5 text-blue-900" />,
+            },
+            {
+              label: "This Month",
+              value: vouchers.filter((v) =>
+                v.allowanceMonth?.includes(
+                  new Date().toLocaleString("default", {
+                    month: "long",
+                  })
+                )
+              ).length,
+              icon: <IconCalendar className="h-5 w-5 text-blue-900" />,
+            },
           ].map((stat) => (
-            <div key={stat.label} style={{ background: "#fff", borderRadius: 12, padding: "20px 24px", border: "1px solid #dce7ff", boxShadow: "0 2px 8px rgba(0,82,204,0.06)", display: "flex", alignItems: "center", gap: 16 }}>
-              <div style={{ width: 48, height: 48, borderRadius: 12, background: "#e8f0ff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>{stat.icon}</div>
+            <div
+              key={stat.label}
+              className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-colors duration-150 hover:border-slate-300 sm:p-6"
+            >
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-50 ring-1 ring-slate-100">
+                {stat.icon}
+              </div>
+
               <div>
-                <div style={{ fontSize: 28, fontWeight: 800, color: "#0052cc" }}>{stat.value}</div>
-                <div style={{ fontSize: 12, color: "#64748b", fontWeight: 500 }}>{stat.label}</div>
+                <div className="text-2xl font-semibold tracking-tight tabular-nums text-slate-900 sm:text-3xl">
+                  {stat.value}
+                </div>
+                <div className="mt-0.5 text-xs font-medium text-slate-500">
+                  {stat.label}
+                </div>
               </div>
             </div>
           ))}
         </div>
 
         {/* Travel Vouchers */}
-        <div style={sectionCard}>
-          <div style={{ background: "linear-gradient(90deg, #003d99, #0052cc)", padding: "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
-            <div style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>All Travel Vouchers</div>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <input
-                value={filterMonth}
-                onChange={(e) => setFilterMonth(e.target.value)}
-                placeholder="Filter by month e.g. June 2026"
-                style={{ border: "none", borderRadius: 6, padding: "6px 12px", fontSize: 12, outline: "none", width: 220, color: "#0a2540" }}
-              />
+        <div className="mb-7 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <div className="flex flex-col gap-4 border-b border-slate-200 bg-slate-50 px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <div className="text-base font-semibold text-slate-900">
+                All Travel Vouchers
+              </div>
+              <div className="mt-1 text-xs text-slate-500">
+                Manage submitted travel voucher records
+              </div>
+            </div>
+
+            <div className="flex w-full items-center gap-2 sm:w-auto">
+              <div className="relative flex-1 sm:w-64">
+                <input
+                  value={filterMonth}
+                  onChange={(e) => setFilterMonth(e.target.value)}
+                  placeholder="Filter by month e.g. June 2026"
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none transition-colors duration-150 placeholder:text-slate-400 focus:border-blue-900 focus:ring-2 focus:ring-blue-900/10"
+                />
+              </div>
+
               {filterMonth && (
-                <button onClick={() => setFilterMonth("")} style={{ background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", borderRadius: 6, padding: "6px 10px", fontSize: 12, cursor: "pointer" }}>✕</button>
+                <button
+                  onClick={() => setFilterMonth("")}
+                  aria-label="Clear filter"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-600 transition-colors duration-150 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-900"
+                >
+                  <IconClose className="h-4 w-4" />
+                </button>
               )}
             </div>
           </div>
 
           {filteredVouchers.length === 0 ? (
-            <div style={{ padding: "40px 24px", textAlign: "center" }}>
-              <div style={{ fontSize: 32, marginBottom: 10 }}>📄</div>
-              <div style={{ color: "#64748b", fontSize: 14 }}>{filterMonth ? `No vouchers found for "${filterMonth}".` : "No vouchers yet."}</div>
+            <div className="flex min-h-[240px] flex-col items-center justify-center px-6 py-12 text-center">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-slate-50">
+                <IconDocument className="h-6 w-6 text-slate-400" />
+              </div>
+
+              <div className="text-sm font-medium text-slate-500">
+                {filterMonth
+                  ? `No vouchers found for "${filterMonth}".`
+                  : "No vouchers yet."}
+              </div>
             </div>
           ) : (
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[760px] border-collapse text-sm">
                 <thead>
-                  <tr style={{ background: "#f0f4ff", borderBottom: "2px solid #dce7ff" }}>
-                    {["#", "Employee", "District", "Month", "Date", "Total (GH¢)", ""].map((h) => (
-                      <th key={h} style={tableHeader}>{h}</th>
+                  <tr className="border-b border-slate-200 bg-slate-50">
+                    {[
+                      "#",
+                      "Employee",
+                      "District",
+                      "Month",
+                      "Date",
+                      "Total (GH¢)",
+                      "",
+                    ].map((h) => (
+                      <th
+                        key={h}
+                        className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-blue-900"
+                      >
+                        {h}
+                      </th>
                     ))}
                   </tr>
                 </thead>
+
                 <tbody>
                   {filteredVouchers.map((v, idx) => (
-                    <tr key={v.id} style={{ borderBottom: "1px solid #f0f4ff", background: idx % 2 === 0 ? "#fff" : "#f8faff" }}>
-                      <td style={{ padding: "12px 16px", color: "#0052cc", fontWeight: 700 }}>#{v.id}</td>
-                      <td style={{ padding: "12px 16px", color: "#0a2540", fontWeight: 500 }}>{v.employee}</td>
-                      <td style={{ padding: "12px 16px", color: "#64748b" }}>{v.district}</td>
-                      <td style={{ padding: "12px 16px", color: "#64748b" }}>{v.allowanceMonth}</td>
-                      <td style={{ padding: "12px 16px", color: "#64748b" }}>{v.date || new Date(v.createdAt).toLocaleDateString()}</td>
-                      <td style={{ padding: "12px 16px", fontFamily: "monospace", fontWeight: 700, color: "#0052cc" }}>GH¢ {v.totalAmount?.toFixed(2)}</td>
-                      <td style={{ padding: "12px 16px" }}>
+                    <tr
+                      key={v.id}
+                      className={`border-b border-slate-100 transition-colors duration-150 hover:bg-slate-50 ${
+                        idx % 2 === 0 ? "bg-white" : "bg-slate-50/50"
+                      }`}
+                    >
+                      <td className="whitespace-nowrap px-4 py-4 font-semibold tabular-nums text-blue-900">
+                        #{v.id}
+                      </td>
+
+                      <td className="whitespace-nowrap px-4 py-4 font-semibold text-slate-800">
+                        {v.employee}
+                      </td>
+
+                      <td className="whitespace-nowrap px-4 py-4 text-slate-600">
+                        {v.district}
+                      </td>
+
+                      <td className="whitespace-nowrap px-4 py-4 text-slate-600">
+                        {v.allowanceMonth}
+                      </td>
+
+                      <td className="whitespace-nowrap px-4 py-4 text-slate-600">
+                        {v.date || new Date(v.createdAt).toLocaleDateString()}
+                      </td>
+
+                      <td className="whitespace-nowrap px-4 py-4 font-semibold tabular-nums text-slate-800">
+                        GH¢ {v.totalAmount?.toFixed(2)}
+                      </td>
+
+                      <td className="px-4 py-4">
                         <ThreeDotMenu
-                          onPrint={() => router.push(`/travel-voucher/${v.id}`)}
-                          onEdit={() => router.push(`/travel-voucher/${v.id}/edit`)}
-                          onDelete={() => setDeleteConfirm({ type: "voucher", id: v.id })}
+                          onPrint={() =>
+                            router.push(`/travel-voucher/${v.id}`)
+                          }
+                          onEdit={() =>
+                            router.push(`/travel-voucher/${v.id}/edit`)
+                          }
+                          onDelete={() =>
+                            setDeleteConfirm({
+                              type: "voucher",
+                              id: v.id,
+                            })
+                          }
                         />
                       </td>
                     </tr>
@@ -376,42 +571,100 @@ export default function AdminDashboard() {
         </div>
 
         {/* Summary of Claims */}
-        <div style={sectionCard}>
-          <div style={{ background: "linear-gradient(90deg, #1a6bff, #4a90e2)", padding: "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>All Summary of Claims</div>
-            <Link href="/summary-claims/new" style={{ background: "rgba(255,255,255,0.2)", color: "#fff", border: "none", borderRadius: 6, padding: "6px 14px", fontSize: 12, fontWeight: 600, textDecoration: "none" }}>
+        <div className="mb-7 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <div className="flex flex-col gap-3 border-b border-slate-200 bg-slate-50 px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <div className="text-base font-semibold text-slate-900">
+                All Summary of Claims
+              </div>
+              <div className="mt-1 text-xs text-slate-500">
+                Review and manage claim summaries
+              </div>
+            </div>
+
+            <Link
+              href="/summary-claims/new"
+              className="inline-flex w-fit items-center rounded-lg bg-blue-900 px-4 py-2 text-xs font-semibold text-white transition-colors duration-150 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-offset-2"
+            >
               + New Summary
             </Link>
           </div>
 
           {summaries.length === 0 ? (
-            <div style={{ padding: "40px 24px", textAlign: "center" }}>
-              <div style={{ fontSize: 32, marginBottom: 10 }}>📊</div>
-              <div style={{ color: "#64748b", fontSize: 14 }}>No summaries yet.</div>
+            <div className="flex min-h-[240px] flex-col items-center justify-center px-6 py-12 text-center">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-slate-50">
+                <IconChart className="h-6 w-6 text-slate-400" />
+              </div>
+
+              <div className="text-sm font-medium text-slate-500">
+                No summaries yet.
+              </div>
             </div>
           ) : (
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[650px] border-collapse text-sm">
                 <thead>
-                  <tr style={{ background: "#f0f4ff", borderBottom: "2px solid #dce7ff" }}>
-                    {["#", "District", "Month", "Prepared By", "Date", ""].map((h) => (
-                      <th key={h} style={tableHeader}>{h}</th>
+                  <tr className="border-b border-slate-200 bg-slate-50">
+                    {[
+                      "#",
+                      "District",
+                      "Month",
+                      "Prepared By",
+                      "Date",
+                      "",
+                    ].map((h) => (
+                      <th
+                        key={h}
+                        className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-blue-900"
+                      >
+                        {h}
+                      </th>
                     ))}
                   </tr>
                 </thead>
+
                 <tbody>
                   {summaries.map((s, idx) => (
-                    <tr key={s.id} style={{ borderBottom: "1px solid #f0f4ff", background: idx % 2 === 0 ? "#fff" : "#f8faff" }}>
-                      <td style={{ padding: "12px 16px", color: "#0052cc", fontWeight: 700 }}>#{s.id}</td>
-                      <td style={{ padding: "12px 16px", color: "#0a2540", fontWeight: 500 }}>{s.district}</td>
-                      <td style={{ padding: "12px 16px", color: "#64748b" }}>{s.month}</td>
-                      <td style={{ padding: "12px 16px", color: "#64748b" }}>{s.preparedBy || "—"}</td>
-                      <td style={{ padding: "12px 16px", color: "#64748b" }}>{new Date(s.createdAt).toLocaleDateString()}</td>
-                      <td style={{ padding: "12px 16px" }}>
+                    <tr
+                      key={s.id}
+                      className={`border-b border-slate-100 transition-colors duration-150 hover:bg-slate-50 ${
+                        idx % 2 === 0 ? "bg-white" : "bg-slate-50/50"
+                      }`}
+                    >
+                      <td className="whitespace-nowrap px-4 py-4 font-semibold tabular-nums text-blue-900">
+                        #{s.id}
+                      </td>
+
+                      <td className="whitespace-nowrap px-4 py-4 font-semibold text-slate-800">
+                        {s.district}
+                      </td>
+
+                      <td className="whitespace-nowrap px-4 py-4 text-slate-600">
+                        {s.month}
+                      </td>
+
+                      <td className="whitespace-nowrap px-4 py-4 text-slate-600">
+                        {s.preparedBy || "—"}
+                      </td>
+
+                      <td className="whitespace-nowrap px-4 py-4 text-slate-600">
+                        {new Date(s.createdAt).toLocaleDateString()}
+                      </td>
+
+                      <td className="px-4 py-4">
                         <ThreeDotMenu
-                          onPrint={() => router.push(`/summary-claims/${s.id}`)}
-                          onEdit={() => router.push(`/summary-claims/${s.id}/edit`)}
-                          onDelete={() => setDeleteConfirm({ type: "summary", id: s.id })}
+                          onPrint={() =>
+                            router.push(`/summary-claims/${s.id}`)
+                          }
+                          onEdit={() =>
+                            router.push(`/summary-claims/${s.id}/edit`)
+                          }
+                          onDelete={() =>
+                            setDeleteConfirm({
+                              type: "summary",
+                              id: s.id,
+                            })
+                          }
                         />
                       </td>
                     </tr>
@@ -421,7 +674,6 @@ export default function AdminDashboard() {
             </div>
           )}
         </div>
-
       </div>
     </div>
   );
