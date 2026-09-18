@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           Int             @id @default(autoincrement())
+  staffNo      String          @unique
+  name         String
+  username     String          @unique
+  passwordHash String
+  role         String          @default("USER")
+  approved     Boolean         @default(false)
+  createdAt    DateTime        @default(now())
+  vouchers     TravelVoucher[]
+}
+
+model TravelVoucher {
+  id                  Int      @id @default(autoincrement())
+  employee            String
+  post                String
+  district            String
+  activity            String?
+  purpose             String
+  allowanceMonth      String
+  hotelNights         Int?
+  hotelPerNight       Float?
+  hotelActual         Float?
+  byAir               Float?
+  byRail              Float?
+  privateVehicleMiles Int?
+  privateVehicleRate  Float?
+  tolls               Float?
+  miscellaneous       Float?
+  totalAmount         Float
+  accountCode         String?
+  date                String?
+  itineraryEntries    String   @default("[]")
+  userId              Int?
+  user                User?    @relation(fields: [userId], references: [id])
+  createdAt           DateTime @default(now())
+}
+
+model SummaryClaim {
+  id           Int      @id @default(autoincrement())
+  month        String
+  district     String
+  preparedBy   String?
+  staffEntries String
+  createdAt    DateTime @default(now())
+}
