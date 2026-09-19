@@ -97,6 +97,77 @@ function IconClose({ className = "h-4 w-4" }: { className?: string }) {
   );
 }
 
+function IconMenu({ className = "h-5 w-5" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <path d="M3 6h18M3 12h18M3 18h18" />
+    </svg>
+  );
+}
+
+/* Mobile nav menu — surfaces "Manage Users" and "New Summary" below the
+   md breakpoint, where the inline nav links are hidden. Same outside-click
+   pattern as ThreeDotMenu below. */
+function MobileNavMenu() {
+  const [open, setOpen] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+
+      if (!target.closest("[data-mobilenav]")) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handler);
+
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    };
+  }, []);
+
+  return (
+    <div data-mobilenav className="relative md:hidden">
+      <button
+        ref={btnRef}
+        onClick={() => setOpen((p) => !p)}
+        aria-label="Open menu"
+        aria-expanded={open}
+        className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 transition-colors duration-150 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-offset-2"
+      >
+        <IconMenu className="h-5 w-5" />
+      </button>
+
+      {open && (
+        <div
+          data-mobilenav
+          className="absolute right-0 top-full z-50 mt-2 min-w-[190px] overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-xl shadow-slate-900/10"
+        >
+          <Link
+            href="/admin/users"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 border-b border-slate-100 px-4 py-3 text-sm font-medium text-slate-700 transition-colors duration-150 hover:bg-slate-50"
+          >
+            <IconUsers className="h-4 w-4" />
+            Manage Users
+          </Link>
+
+          <Link
+            href="/summary-claims/new"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-blue-900 transition-colors duration-150 hover:bg-slate-50"
+          >
+            <IconChart className="h-4 w-4" />
+            New Summary
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ThreeDotMenu({
   onPrint,
   onEdit,
@@ -347,7 +418,7 @@ export default function AdminDashboard() {
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
             <Link
               href="/admin/users"
-              className="hidden items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition-colors duration-150 hover:border-slate-300 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-900 sm:flex"
+              className="hidden items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition-colors duration-150 hover:border-slate-300 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-900 md:flex"
             >
               <IconUsers className="h-4 w-4" />
               Manage Users
@@ -360,6 +431,8 @@ export default function AdminDashboard() {
               <IconChart className="h-4 w-4" />
               New Summary
             </Link>
+
+            <MobileNavMenu />
 
             <div className="hidden text-right lg:block">
               <div className="text-sm font-semibold text-slate-800">

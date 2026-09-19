@@ -13,6 +13,42 @@ type Voucher = {
   createdAt: string;
 };
 
+/* Presentational icon set — inline SVG, no new dependency required.
+   Swap for lucide-react equivalents if that package is already installed. */
+function IconPlane({ className = "h-5 w-5" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <path d="M2 16l20-8-8 20-3-9-9-3z" />
+    </svg>
+  );
+}
+
+function IconClock({ className = "h-5 w-5" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 3" />
+    </svg>
+  );
+}
+
+function IconDocument({ className = "h-6 w-6" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+      <path d="M14 2v6h6" />
+    </svg>
+  );
+}
+
+function IconArrowRight({ className = "h-3.5 w-3.5" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <path d="M5 12h14M13 6l6 6-6 6" />
+    </svg>
+  );
+}
+
 export default function UserDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -36,32 +72,31 @@ export default function UserDashboard() {
 
   if (status === "loading" || loading)
     return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f0f4ff", fontFamily: "'Inter','Segoe UI',sans-serif" }}>
-        <div style={{ color: "#0052cc", fontWeight: 600 }}>Loading…</div>
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="font-semibold text-blue-900">Loading…</div>
       </div>
     );
 
   const user = session?.user as any;
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f0f4ff", fontFamily: "'Inter','Segoe UI',sans-serif" }}>
-
+    <div className="min-h-screen bg-slate-50">
       {/* ── Nav bar ── */}
-      <div style={{ background: "#0052cc", padding: "0 32px", display: "flex", alignItems: "center", gap: 16, height: 60, boxShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>
-        <img src="/logo.png" alt="GWL" style={{ height: 36, width: 36, objectFit: "contain", borderRadius: 4 }} />
-        <div style={{ width: 1, height: 28, background: "rgba(255,255,255,0.25)" }} />
+      <div className="flex h-[60px] items-center gap-4 bg-blue-900 px-8">
+        <img src="/logo.png" alt="GWL" className="h-9 w-9 rounded object-contain" />
+        <div className="h-7 w-px bg-white/25" />
         <div>
-          <div style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>Ghana Water Limited</div>
-          <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11 }}>Ashanti South Region</div>
+          <div className="text-sm font-semibold text-white">Ghana Water Limited</div>
+          <div className="text-[11px] text-white/65">Ashanti South Region</div>
         </div>
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{ textAlign: "right" }}>
-            <div style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>{user?.name}</div>
-            <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 11 }}>Staff No: {user?.staffNo}</div>
+        <div className="ml-auto flex items-center gap-3">
+          <div className="text-right">
+            <div className="text-[13px] font-semibold text-white">{user?.name}</div>
+            <div className="text-[11px] text-white/60">Staff No: {user?.staffNo}</div>
           </div>
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
-            style={{ background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 6, padding: "6px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+            className="rounded-md border border-white/30 bg-white/15 px-3.5 py-1.5 text-xs font-semibold text-white transition-colors duration-150 hover:bg-white/25 focus:outline-none focus:ring-2 focus:ring-white/60 focus:ring-offset-2 focus:ring-offset-blue-900"
           >
             Sign Out
           </button>
@@ -69,91 +104,117 @@ export default function UserDashboard() {
       </div>
 
       {/* ── Hero ── */}
-      <div style={{ background: "linear-gradient(135deg, #003d99 0%, #0052cc 55%, #1a6bff 100%)", padding: "40px 32px", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", top: -40, right: -40, width: 200, height: 200, borderRadius: "50%", background: "rgba(255,255,255,0.05)" }} />
-        <div style={{ position: "relative", zIndex: 1 }}>
-          <div style={{ fontSize: 12, color: "#a8c4ff", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>Staff Portal</div>
-          <h1 style={{ fontSize: 26, fontWeight: 800, color: "#fff", margin: "0 0 8px" }}>
-            Welcome, {user?.name?.split(" ")[0]}
-          </h1>
-          <p style={{ color: "#c0d6ff", fontSize: 13, margin: 0 }}>
-            Submit travel vouchers and track your claims below.
-          </p>
+      <div className="bg-blue-900 px-8 py-10">
+        <div className="text-xs font-bold uppercase tracking-[0.15em] text-blue-200">
+          Staff Portal
         </div>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-[26px]">
+          Welcome, {user?.name?.split(" ")[0]}
+        </h1>
+        <p className="mt-2 text-[13px] text-blue-100">
+          Submit travel vouchers and track your claims below.
+        </p>
       </div>
 
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 24px 60px" }}>
-
+      <div className="mx-auto max-w-[900px] px-6 py-8 pb-16">
         {/* ── Action Cards ── */}
-        <div style={{ marginBottom: 36 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#0052cc", letterSpacing: 2, textTransform: "uppercase", marginBottom: 16 }}>
+        <div className="mb-9">
+          <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.15em] text-blue-900">
             Quick Actions
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-
-            <Link href="/travel-voucher/new" style={{ textDecoration: "none" }}>
-              <div style={{ background: "#fff", borderRadius: 14, padding: "28px 24px", border: "1px solid #dce7ff", borderTop: "4px solid #0052cc", boxShadow: "0 2px 8px rgba(0,82,204,0.07)", cursor: "pointer" }}>
-                <div style={{ width: 48, height: 48, borderRadius: 12, background: "#e8f0ff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, marginBottom: 14 }}>✈️</div>
-                <div style={{ fontSize: 16, fontWeight: 700, color: "#0a2540", marginBottom: 6 }}>Travel Expense Voucher</div>
-                <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.6, margin: "0 0 16px" }}>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <Link href="/travel-voucher/new" className="block no-underline">
+              <div className="h-full rounded-xl border border-slate-200 border-t-4 border-t-blue-900 bg-white p-6 shadow-sm transition-colors duration-150 hover:border-slate-300 hover:border-t-blue-900">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-slate-50">
+                  <IconPlane className="h-5 w-5 text-blue-900" />
+                </div>
+                <div className="mb-1.5 text-base font-semibold text-slate-900">
+                  Travel Expense Voucher
+                </div>
+                <p className="mb-4 text-[13px] leading-relaxed text-slate-600">
                   Submit a new travel claim with expenses and itinerary. Prints as two pages.
                 </p>
-                <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#0052cc", color: "#fff", padding: "7px 16px", borderRadius: 8, fontSize: 12, fontWeight: 700 }}>
-                  New Voucher →
+                <div className="inline-flex items-center gap-1.5 rounded-lg bg-blue-900 px-4 py-[7px] text-xs font-semibold text-white">
+                  New Voucher
+                  <IconArrowRight />
                 </div>
               </div>
             </Link>
 
             {/* Overtime — coming soon */}
-            <div style={{ background: "#fff", borderRadius: 14, padding: "28px 24px", border: "1px solid #dce7ff", borderTop: "4px solid #94a3b8", boxShadow: "0 2px 8px rgba(0,82,204,0.07)", opacity: 0.6 }}>
-              <div style={{ width: 48, height: 48, borderRadius: 12, background: "#f0f4ff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, marginBottom: 14 }}>⏱️</div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: "#0a2540", marginBottom: 6 }}>Overtime Claim</div>
-              <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.6, margin: "0 0 16px" }}>
+            <div className="rounded-xl border border-slate-200 border-t-4 border-t-slate-300 bg-white p-6 opacity-60 shadow-sm">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-slate-50">
+                <IconClock className="h-5 w-5 text-slate-500" />
+              </div>
+              <div className="mb-1.5 text-base font-semibold text-slate-900">
+                Overtime Claim
+              </div>
+              <p className="mb-4 text-[13px] leading-relaxed text-slate-600">
                 Submit overtime hours for approval.
               </p>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#94a3b8", color: "#fff", padding: "7px 16px", borderRadius: 8, fontSize: 12, fontWeight: 700 }}>
+              <div className="inline-flex items-center gap-1.5 rounded-lg bg-slate-400 px-4 py-[7px] text-xs font-semibold text-white">
                 Coming Soon
               </div>
             </div>
-
           </div>
         </div>
 
         {/* ── My Vouchers ── */}
-        <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #dce7ff", boxShadow: "0 2px 8px rgba(0,82,204,0.06)", overflow: "hidden" }}>
-          <div style={{ background: "linear-gradient(90deg, #003d99, #0052cc)", padding: "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>My Travel Vouchers</div>
-            <div style={{ fontSize: 11, color: "#a8c4ff" }}>{vouchers.length} total</div>
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <div className="flex items-center justify-between bg-blue-900 px-5 py-3.5">
+            <div className="text-sm font-semibold text-white">My Travel Vouchers</div>
+            <div className="text-[11px] text-blue-200">{vouchers.length} total</div>
           </div>
 
           {vouchers.length === 0 ? (
-            <div style={{ padding: "48px 24px", textAlign: "center" }}>
-              <div style={{ fontSize: 36, marginBottom: 12 }}>📄</div>
-              <div style={{ color: "#64748b", fontSize: 14 }}>No vouchers submitted yet.</div>
-              <div style={{ color: "#94a3b8", fontSize: 13, marginTop: 4 }}>Create your first travel voucher above.</div>
+            <div className="px-6 py-12 text-center">
+              <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-slate-50">
+                <IconDocument className="h-6 w-6 text-slate-400" />
+              </div>
+              <div className="text-sm text-slate-600">No vouchers submitted yet.</div>
+              <div className="mt-1 text-[13px] text-slate-400">
+                Create your first travel voucher above.
+              </div>
             </div>
           ) : (
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-[13px]">
                 <thead>
-                  <tr style={{ background: "#f0f4ff", borderBottom: "2px solid #dce7ff" }}>
+                  <tr className="border-b-2 border-slate-200 bg-slate-50">
                     {["#", "Month", "Date", "Total (GH¢)", "Action"].map((h) => (
-                      <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#0052cc", letterSpacing: 1, textTransform: "uppercase" }}>{h}</th>
+                      <th
+                        key={h}
+                        className="px-4 py-2.5 text-left text-[11px] font-bold uppercase tracking-wider text-blue-900"
+                      >
+                        {h}
+                      </th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {vouchers.map((v, idx) => (
-                    <tr key={v.id} style={{ borderBottom: "1px solid #f0f4ff", background: idx % 2 === 0 ? "#fff" : "#f8faff" }}>
-                      <td style={{ padding: "12px 16px", color: "#0052cc", fontWeight: 700 }}>#{v.id}</td>
-                      <td style={{ padding: "12px 16px", color: "#0a2540", fontWeight: 500 }}>{v.allowanceMonth}</td>
-                      <td style={{ padding: "12px 16px", color: "#64748b" }}>{v.date || new Date(v.createdAt).toLocaleDateString()}</td>
-                      <td style={{ padding: "12px 16px", fontFamily: "monospace", fontWeight: 700, color: "#0052cc" }}>
+                    <tr
+                      key={v.id}
+                      className={`border-b border-slate-100 ${idx % 2 === 0 ? "bg-white" : "bg-slate-50/50"}`}
+                    >
+                      <td className="px-4 py-3 font-semibold tabular-nums text-blue-900">
+                        #{v.id}
+                      </td>
+                      <td className="px-4 py-3 font-medium text-slate-900">
+                        {v.allowanceMonth}
+                      </td>
+                      <td className="px-4 py-3 text-slate-600">
+                        {v.date || new Date(v.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className="px-4 py-3 font-mono font-semibold tabular-nums text-blue-900">
                         GH¢ {v.totalAmount?.toFixed(2) || "0.00"}
                       </td>
-                      <td style={{ padding: "12px 16px" }}>
-                        <Link href={`/travel-voucher/${v.id}`} style={{ background: "#0052cc", color: "#fff", padding: "5px 14px", borderRadius: 6, fontSize: 12, fontWeight: 600, textDecoration: "none" }}>
-                          View & Print
+                      <td className="px-4 py-3">
+                        <Link
+                          href={`/travel-voucher/${v.id}`}
+                          className="inline-block rounded-md bg-blue-900 px-3.5 py-[5px] text-xs font-semibold text-white no-underline transition-colors duration-150 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-offset-2"
+                        >
+                          View &amp; Print
                         </Link>
                       </td>
                     </tr>
