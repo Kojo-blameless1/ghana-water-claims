@@ -23,8 +23,7 @@ type Summary = {
   createdAt: string;
 };
 
-/* Presentational icon set — inline SVG, no new dependency required.
-   Swap for lucide-react equivalents if that package is already installed. */
+
 function IconPrinter({ className = "h-4 w-4" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
@@ -105,9 +104,7 @@ function IconMenu({ className = "h-5 w-5" }: { className?: string }) {
   );
 }
 
-/* Mobile nav menu — surfaces "Manage Users" and "New Summary" below the
-   md breakpoint, where the inline nav links are hidden. Same outside-click
-   pattern as ThreeDotMenu below. */
+
 function MobileNavMenu() {
   const [open, setOpen] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -441,12 +438,12 @@ export default function AdminDashboard() {
               <div className="text-[11px] text-slate-500">Administrator</div>
             </div>
 
-            <button
-              onClick={() => signOut({ callbackUrl: "/login" })}
-              className="rounded-lg bg-slate-800 px-3 py-2 text-xs font-semibold text-white transition-colors duration-150 hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-offset-2 sm:px-4"
-            >
-              Sign Out
-            </button>
+           <button
+            onClick={() => signOut({ callbackUrl: "/login" })}
+             className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition-colors duration-150 hover:bg-slate-50 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-offset-2 sm:px-4"
+          >
+             Sign Out
+           </button>
           </div>
         </div>
       </div>
